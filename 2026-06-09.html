@@ -4756,6 +4756,110 @@
 </style>
 </head>
 <body class="data-grid-overlay overflow-x-hidden">
+<!-- ===== CYBER-FX (additive, không thay đổi nội dung có sẵn) ===== -->
+<style id="cyber-fx">
+  /* --- con trỏ phát sáng + tia điện theo chuột --- */
+  #cf-cursor{position:fixed;top:0;left:0;width:360px;height:360px;margin:-180px 0 0 -180px;
+    border-radius:50%;pointer-events:none;z-index:9998;opacity:0;transition:opacity .35s;
+    background:radial-gradient(circle,rgba(108,222,107,.16),rgba(108,222,107,.05) 42%,transparent 70%);
+    mix-blend-mode:screen;will-change:transform}
+  #cf-spark{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9997}
+
+  /* --- tiêu đề neon + tia điện viền chữ --- */
+  .cf-title{position:relative;display:inline-block;isolation:isolate}
+  header .cf-title{animation:cf-neon 3.2s ease-in-out infinite}
+  @keyframes cf-neon{
+    0%,100%{text-shadow:0 0 6px rgba(108,222,107,.55),0 0 14px rgba(108,222,107,.30)}
+    50%{text-shadow:0 0 11px rgba(108,222,107,.95),0 0 24px rgba(108,222,107,.55),0 0 44px rgba(67,182,73,.40)}
+  }
+  main h2.cf-title{text-shadow:0 0 16px rgba(108,222,107,.28)}
+  /* đường gạch chân tia điện chạy */
+  .cf-underline{position:absolute;left:0;right:0;bottom:-9px;height:2px;pointer-events:none;
+    background:linear-gradient(90deg,transparent,#6cde6b,#aef5ad,#6cde6b,transparent);
+    background-size:200% 100%;filter:drop-shadow(0 0 6px #6cde6b);
+    animation:cf-sweep 2.6s linear infinite}
+  @keyframes cf-sweep{0%{background-position:200% 0}100%{background-position:-200% 0}}
+  /* tách màu RGB (glitch) khi rê chuột vào tiêu đề */
+  .cf-title[data-text]::before,.cf-title[data-text]::after{
+    content:attr(data-text);position:absolute;left:0;top:0;width:100%;
+    opacity:0;pointer-events:none;transition:opacity .15s}
+  .cf-title[data-text]:hover::before{opacity:.85;color:#22d3ee;mix-blend-mode:screen;
+    animation:cf-glx .45s steps(2) infinite}
+  .cf-title[data-text]:hover::after{opacity:.85;color:#f0468b;mix-blend-mode:screen;
+    animation:cf-gly .45s steps(2) infinite}
+  @keyframes cf-glx{0%{transform:translate(0,0)}25%{transform:translate(-2px,1px)}
+    50%{transform:translate(2px,-1px)}75%{transform:translate(-1px,-1px)}100%{transform:translate(1px,1px)}}
+  @keyframes cf-gly{0%{transform:translate(0,0)}25%{transform:translate(2px,-1px)}
+    50%{transform:translate(-2px,1px)}75%{transform:translate(1px,1px)}100%{transform:translate(-1px,-1px)}}
+
+  /* --- rê chuột vào thẻ: nâng nhẹ + viền neon chạy quanh --- */
+  main .glass-panel{position:relative;
+    transition:transform .25s cubic-bezier(.2,.7,.3,1),box-shadow .25s,border-color .25s}
+  main .glass-panel:hover{transform:translateY(-3px);
+    border-color:rgba(108,222,107,.55)!important;
+    box-shadow:0 12px 32px -10px rgba(0,0,0,.6),0 0 18px rgba(108,222,107,.25),inset 0 0 18px rgba(108,222,107,.06)}
+  main .glass-panel::after{content:'';position:absolute;inset:0;border-radius:inherit;padding:1px;
+    background:linear-gradient(120deg,transparent 28%,rgba(108,222,107,.85),transparent 72%);
+    background-size:300% 300%;opacity:0;transition:opacity .25s;pointer-events:none;
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;mask-composite:exclude}
+  main .glass-panel:hover::after{opacity:1;animation:cf-edge 1.8s linear infinite}
+  @keyframes cf-edge{0%{background-position:0% 50%}100%{background-position:300% 50%}}
+  main .neon-green:hover{box-shadow:0 0 22px rgba(67,182,73,.55),inset 0 0 12px rgba(67,182,73,.15)}
+  main .neon-red:hover{box-shadow:0 0 22px rgba(239,68,68,.55),inset 0 0 12px rgba(239,68,68,.15)}
+  main .neon-amber:hover{box-shadow:0 0 22px rgba(245,158,11,.55),inset 0 0 12px rgba(245,158,11,.15)}
+  /* micro-interaction cho nav / tab */
+  header nav a:hover,aside a:hover,main .tab:hover{text-shadow:0 0 8px rgba(108,222,107,.6)}
+
+  @media (prefers-reduced-motion:reduce){
+    #cf-cursor,#cf-spark,.cf-underline{display:none}
+    header .cf-title{animation:none}
+    main .glass-panel:hover{transform:none}
+    main .glass-panel:hover::after{animation:none}
+  }
+</style>
+<script>
+(function(){
+  function init(){
+    var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+    function deco(el){if(!el)return;el.classList.add('cf-title');
+      if(!el.getAttribute('data-text'))el.setAttribute('data-text',(el.textContent||'').trim());}
+    var h1=document.querySelector('header h1');
+    var h2=document.querySelector('main h2');
+    deco(h1);deco(h2);
+    if(h2&&!reduce){var u=document.createElement('i');u.className='cf-underline';h2.appendChild(u);}
+    if(reduce)return;
+    var cur=document.createElement('div');cur.id='cf-cursor';document.body.appendChild(cur);
+    var cv=document.createElement('canvas');cv.id='cf-spark';document.body.appendChild(cv);
+    var ctx=cv.getContext('2d'),DPR=Math.min(window.devicePixelRatio||1,2),W,H;
+    function resize(){W=cv.width=innerWidth*DPR;H=cv.height=innerHeight*DPR;
+      cv.style.width=innerWidth+'px';cv.style.height=innerHeight+'px';}
+    resize();addEventListener('resize',resize);
+    var parts=[],lx=0,ly=0,moved=false;
+    addEventListener('mousemove',function(e){
+      cur.style.transform='translate('+e.clientX+'px,'+e.clientY+'px)';cur.style.opacity=1;
+      var dx=e.clientX-lx,dy=e.clientY-ly,d=Math.hypot(dx,dy);
+      if(moved&&d>4){var n=Math.min(3,(d/8|0)+1);
+        for(var i=0;i<n;i++)parts.push({x:e.clientX*DPR,y:e.clientY*DPR,
+          vx:(Math.random()-.5)*1.4*DPR,vy:(Math.random()-.5)*1.4*DPR,
+          life:1,r:(Math.random()*1.6+.6)*DPR});}
+      lx=e.clientX;ly=e.clientY;moved=true;
+    },{passive:true});
+    addEventListener('mouseout',function(){cur.style.opacity=0;});
+    (function loop(){ctx.clearRect(0,0,W,H);
+      for(var i=parts.length-1;i>=0;i--){var p=parts[i];p.x+=p.vx;p.y+=p.vy;p.life-=.035;
+        if(p.life<=0){parts.splice(i,1);continue;}
+        ctx.globalAlpha=p.life;ctx.fillStyle='rgba(108,222,107,'+p.life+')';
+        ctx.shadowBlur=8*DPR;ctx.shadowColor='#6cde6b';
+        ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,6.2832);ctx.fill();}
+      ctx.globalAlpha=1;ctx.shadowBlur=0;requestAnimationFrame(loop);})();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
+  else init();
+})();
+</script>
+<!-- ===== /CYBER-FX ===== -->
+
 <canvas id="bg-shader" class="fixed inset-0 w-full h-full opacity-25 pointer-events-none" style="z-index:0"></canvas>
 <!-- ===== TOP BAR ===== -->
 <header class="fixed top-0 left-0 right-0 z-50 h-16 glass-panel border-b laser flex items-center justify-between px-5">
