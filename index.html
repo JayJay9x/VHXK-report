@@ -19,14 +19,14 @@
 <div class="wrap">
   <div class="spin"></div>
   <div class="t">Đang chuyển tới báo cáo mới nhất…</div>
-  <noscript><a href="2026-06-23.html">Mở báo cáo mới nhất</a></noscript>
+  <noscript><a href="2026-06-24.html">Mở báo cáo mới nhất</a></noscript>
 </div>
 <script>
 /* Trang chủ: luôn redirect sang ngày mới nhất trong reports.json.
    Chỉ cần cập nhật reports.json mỗi ngày, không phải sửa file này. */
 (async () => {
   // fallback tĩnh nếu fetch lỗi (ví dụ mở bằng file://)
-  var fallback = '2026-06-23.html';
+  var fallback = '2026-06-24.html';
   try {
     var res = await fetch('reports.json', { cache: 'no-store' });
     var days = await res.json();
