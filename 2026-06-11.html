@@ -4895,6 +4895,7 @@
       <li><a class="flex items-center gap-3 p-3 text-on-var hover:bg-surf-low transition" href="#board" data-jump="board"><span class="material-symbols-outlined text-[20px]">grid_view</span><span class="lbl-caps text-[11px]">BẢNG THEO DÕI</span></a></li>
       <li><a class="flex items-center gap-3 p-3 text-on-var hover:bg-surf-low transition" href="#risk" data-jump="risk"><span class="material-symbols-outlined text-[20px]">security</span><span class="lbl-caps text-[11px]">RỦI RO</span></a></li>
       <li><a class="flex items-center gap-3 p-3 text-on-var hover:bg-surf-low transition" href="#action" data-jump="action"><span class="material-symbols-outlined text-[20px]">lightbulb</span><span class="lbl-caps text-[11px]">HÀNH ĐỘNG</span></a></li>
+      <li><a class="flex items-center gap-3 p-3 text-on-var hover:bg-surf-low transition" href="#timeline" data-jump="timeline"><span class="material-symbols-outlined text-[20px]">timeline</span><span class="lbl-caps text-[11px]">LỊCH SỬ TIẾN ĐỘ</span></a></li>
     </ul>
     <div class="mt-8 text-primary lbl-caps text-[10px] mb-3 border-l-2 border-primary pl-3">LỊCH SỬ BÁO CÁO</div>
     <nav class="flex flex-wrap gap-2 pl-1" id="datenav"></nav>
@@ -4935,6 +4936,7 @@
     <button class="tab px-5 md:px-8 py-3 lbl-caps text-[11px] text-on-var hover:text-primary transition whitespace-nowrap" data-tab="board">BẢNG THEO DÕI</button>
     <button class="tab px-5 md:px-8 py-3 lbl-caps text-[11px] text-on-var hover:text-primary transition whitespace-nowrap" data-tab="risk">RỦI RO &amp; VẤN ĐỀ</button>
     <button class="tab px-5 md:px-8 py-3 lbl-caps text-[11px] text-on-var hover:text-primary transition whitespace-nowrap" data-tab="action">ĐỀ XUẤT HÀNH ĐỘNG</button>
+    <button class="tab px-5 md:px-8 py-3 lbl-caps text-[11px] text-on-var hover:text-primary transition whitespace-nowrap" data-tab="timeline">LỊCH SỬ TIẾN ĐỘ</button>
   </div>
 
   <!-- ===== OVERVIEW ===== -->
@@ -5035,6 +5037,47 @@
   <!-- ===== RISK ===== -->
   <section class="panel" id="risk">
     <div id="risklist" class="space-y-8"></div>
+  </section>
+
+  <!-- ===== TIMELINE / REPORT-HISTORY SEARCH ===== -->
+  <section class="panel" id="timeline">
+    <div class="glass-panel p-5 mb-5">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-3 mb-4">
+        <div>
+          <h3 class="lbl-caps text-primary text-[12px] flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">timeline</span>TRA CỨU LỊCH SỬ TIẾN ĐỘ</h3>
+          <p class="text-[11px] text-on-var mt-1">Tìm một hợp đồng / khách hàng để xem lát cắt dọc tiến độ qua các ngày báo cáo.</p>
+        </div>
+        <span class="text-[10px] lbl-caps text-on-var" id="tspan">—</span>
+      </div>
+      <div class="flex flex-wrap items-end gap-4">
+        <div class="flex-1 min-w-[240px]">
+          <label class="text-[10px] lbl-caps text-on-var uppercase mb-2 block">Tìm trong lịch sử báo cáo</label>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-var text-[20px]">search</span>
+            <input id="tq" list="tlist" type="text" placeholder="Mã HĐ, Khách hàng, nội dung… (vd: AWTC-AAN.140726, WILMAR)" class="w-full bg-terminal border laser text-sm text-on-surface focus:ring-0 focus:border-primary pl-10 py-2 rounded-sm"/>
+            <datalist id="tlist"></datalist>
+          </div>
+        </div>
+        <div>
+          <label class="text-[10px] lbl-caps text-on-var uppercase mb-2 block">Khách hàng</label>
+          <select id="tcust" class="bg-terminal border laser text-xs text-primary py-2 px-3 focus:ring-0 rounded-sm min-w-[170px]"><option value="ALL">Tất cả khách hàng</option></select>
+        </div>
+        <div>
+          <label class="text-[10px] lbl-caps text-on-var uppercase mb-2 block">Thứ tự thời gian</label>
+          <select id="tsort" class="bg-terminal border laser text-xs text-primary py-2 px-3 focus:ring-0 rounded-sm">
+            <option value="asc">Cũ → Mới</option><option value="desc">Mới → Cũ</option>
+          </select>
+        </div>
+        <button id="treset" class="px-3 py-2 border laser text-[11px] lbl-caps text-on-var hover:text-primary transition rounded-sm">↺ ĐẶT LẠI</button>
+      </div>
+      <div class="mt-3">
+        <p class="text-[10px] lbl-caps text-on-var uppercase mb-2">Hợp đồng nổi bật (bấm để xem timeline)</p>
+        <div class="flex flex-wrap gap-2" id="tquick"></div>
+      </div>
+      <div class="text-[11px] lbl-caps text-on-var mt-3" id="tcount"></div>
+    </div>
+    <div id="tresults" class="space-y-8"></div>
+    <div class="glass-panel p-10 text-center text-on-var lbl-caps text-[12px]" id="tempty">// NHẬP TỪ KHOÁ HOẶC CHỌN MỘT HỢP ĐỒNG ĐỂ XEM TIMELINE TIẾN ĐỘ THEO NGÀY //</div>
   </section>
 
   <!-- ===== ACTION / APPROVAL COMMAND CENTER ===== -->
@@ -5401,6 +5444,117 @@ document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>show
 document.querySelectorAll('[data-jump]').forEach(el=>el.addEventListener('click',e=>{e.preventDefault();showTab(el.dataset.jump);}));
 
 renderBoard();
+
+/* ---- TIMELINE: report-history search (lát cắt dọc tiến độ theo thời gian) ---- */
+(function(){
+  const cur=(location.pathname.split('/').pop()||'').replace('.html','');
+  const tq=document.getElementById('tq'),tcust=document.getElementById('tcust'),
+        tsort=document.getElementById('tsort'),tres=document.getElementById('tresults'),
+        temp=document.getElementById('tempty'),tcnt=document.getElementById('tcount'),
+        tquick=document.getElementById('tquick'),tlist=document.getElementById('tlist'),
+        tspan=document.getElementById('tspan');
+  if(!tq)return;
+  let ENTRIES=[];
+  const HINT='// NHẬP TỪ KHOÁ HOẶC CHỌN MỘT HỢP ĐỒNG ĐỂ XEM TIMELINE TIẾN ĐỘ THEO NGÀY //';
+  function ctrCode(ctr){
+    const head=String(ctr).split('(')[0];
+    const m=head.match(/^\s*([A-Za-z0-9][A-Za-z0-9._\/\-]{2,})/);
+    return (m?m[1]:head.trim()||String(ctr)).toUpperCase();
+  }
+  function fmtDate(d){return d.slice(8,10)+'/'+d.slice(5,7)+'/'+d.slice(0,4);}
+
+  fetch('history.json',{cache:'no-store'}).then(r=>r.json()).then(H=>{
+    const dates=Object.keys(H).sort();
+    dates.forEach(date=>{(H[date]||[]).forEach(d=>{
+      ENTRIES.push({date,code:ctrCode(d.ctr),cust:d.cust||'',ctr:d.ctr||'',rag:d.rag||'A',
+        at:d.at||1,title:d.title||'',facts:d.facts||[],next:d.next||'',owner:d.owner||'',dl:d.dl||''});
+    });});
+    if(dates.length)tspan.textContent=dates.length+' NGÀY · '+fmtDate(dates[0])+' → '+fmtDate(dates[dates.length-1]);
+    [...new Set(ENTRIES.map(e=>e.cust))].filter(Boolean).sort().forEach(c=>{
+      const o=document.createElement('option');o.value=c;o.textContent=c;tcust.appendChild(o);});
+    [...new Set(ENTRIES.map(e=>e.code))].sort().forEach(c=>{
+      const o=document.createElement('option');o.value=c;tlist.appendChild(o);});
+    const byCode={};
+    ENTRIES.forEach(e=>{(byCode[e.code]=byCode[e.code]||new Set()).add(e.date);});
+    const rank=Object.keys(byCode).map(c=>({c,n:byCode[c].size,
+      cur:ENTRIES.some(e=>e.code===c&&e.date===cur)?1:0}))
+      .sort((a,b)=>(b.cur-a.cur)||(b.n-a.n)).slice(0,12);
+    tquick.innerHTML=rank.map(r=>`<button class="tqchip px-2.5 py-1 text-[10px] font-mono border laser rounded-sm text-on-var hover:text-primary transition" data-code="${r.c.replace(/"/g,'&quot;')}">${r.c} <span class="text-primary">·${r.n}</span></button>`).join('');
+    tquick.querySelectorAll('.tqchip').forEach(b=>b.addEventListener('click',()=>{tq.value=b.dataset.code;tcust.value='ALL';render();}));
+    render();
+  }).catch(e=>{console.warn('history.json?',e);temp.textContent='// KHÔNG TẢI ĐƯỢC LỊCH SỬ (history.json) //';});
+
+  function node(e){
+    const isCur=e.date===cur;
+    const clr=(typeof RAGCLR!=='undefined'&&RAGCLR[e.rag])||'#F59E0B';
+    const stg=(typeof STAGES!=='undefined'&&STAGES[(e.at||1)-1])||'';
+    const rs=(typeof RAGSHORT!=='undefined'&&RAGSHORT[e.rag])||'';
+    const facts=(e.facts||[]).map(f=>`<li class="text-[11.5px] text-on-var leading-snug">• ${f}</li>`).join('');
+    const dateLink=isCur
+      ?`<span class="font-mono text-[11px] font-bold" style="color:${clr}">${fmtDate(e.date)} · HÔM NAY</span>`
+      :`<a href="${e.date}.html" class="font-mono text-[11px] font-bold hover:underline" style="color:${clr}">${fmtDate(e.date)}</a>`;
+    return `<div class="relative pl-6 pb-5">
+      <span class="absolute left-0 top-1.5 w-3 h-3 rounded-full border-2" style="background:${clr};border-color:${clr}55;box-shadow:0 0 8px ${clr}66"></span>
+      <div class="flex flex-wrap items-center gap-2 mb-1">
+        ${dateLink}
+        <span class="px-1.5 py-0.5 text-[9px] font-bold border" style="color:${clr};border-color:${clr}66;background:${clr}1a">${rs}</span>
+        <span class="text-[9px] lbl-caps text-on-var">GĐ ${e.at}/5 · ${stg.toUpperCase()}</span>
+      </div>
+      <p class="font-mono text-[10px] text-on-var mb-1">${e.ctr}</p>
+      <p class="text-[12px] font-bold text-on-surface mb-1">${e.title}</p>
+      <ul class="space-y-0.5 mb-1">${facts}</ul>
+      ${e.next?`<p class="text-[11.5px] font-bold" style="color:${clr}">▶ ${e.next}</p>`:''}
+      <p class="text-[10px] lbl-caps text-on-var mt-1">Phụ trách: <span class="text-on-surface">${e.owner||'—'}</span> · Deadline: <span style="color:${clr}">${e.dl||'—'}</span></p>
+    </div>`;
+  }
+
+  function render(){
+    const q=tq.value.trim().toLowerCase(),cust=tcust.value,asc=tsort.value==='asc';
+    let list=ENTRIES.filter(e=>{
+      if(cust!=='ALL'&&e.cust!==cust)return false;
+      if(q){const hay=(e.cust+' '+e.ctr+' '+e.code+' '+e.title+' '+(e.facts||[]).join(' ')+' '+e.next+' '+e.owner).toLowerCase();if(!hay.includes(q))return false;}
+      return true;
+    });
+    if(!q&&cust==='ALL'){tres.innerHTML='';temp.style.display='block';temp.textContent=HINT;tcnt.textContent='';return;}
+    const groups=new Map();
+    list.forEach(e=>{const k=e.cust+' ‖ '+e.code;if(!groups.has(k))groups.set(k,[]);groups.get(k).push(e);});
+    if(!groups.size){tres.innerHTML='';temp.style.display='block';temp.textContent='// KHÔNG TÌM THẤY HỢP ĐỒNG KHỚP TỪ KHOÁ //';tcnt.textContent='// 0 KẾT QUẢ';return;}
+    temp.style.display='none';
+    const BD=(typeof BORD!=='undefined')?BORD:{R:'border-crit',A:'border-warn',G:'border-ok'};
+    const RS=(typeof RAGSHORT!=='undefined')?RAGSHORT:{R:'CRITICAL',A:'MONITORING',G:'ON-TRACK'};
+    const order=[...groups.entries()].map(([k,arr])=>{
+      arr.sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);
+      return {k,arr,last:arr[arr.length-1].date,first:arr[0].date};
+    }).sort((a,b)=>a.last<b.last?1:a.last>b.last?-1:0);
+    tres.innerHTML=order.map(g=>{
+      const items=asc?g.arr:g.arr.slice().reverse();
+      const latest=g.arr[g.arr.length-1];
+      const clr=(typeof RAGCLR!=='undefined'&&RAGCLR[latest.rag])||'#F59E0B';
+      return `<div class="glass-panel p-5 border-l-4 ${BD[latest.rag]||'border-warn'}">
+        <div class="flex flex-wrap justify-between items-start gap-2 mb-4 pb-3 border-b laser">
+          <div>
+            <h4 class="lbl-caps text-[13px] text-on-surface">${latest.cust}</h4>
+            <p class="font-mono text-[11px] text-primary mt-0.5">${latest.code}</p>
+          </div>
+          <div class="text-right">
+            <span class="px-2 py-1 text-[9px] font-bold border" style="color:${clr};border-color:${clr}66;background:${clr}1a">MỚI NHẤT: ${RS[latest.rag]||''}</span>
+            <p class="text-[10px] lbl-caps text-on-var mt-1">${g.arr.length} MỐC · ${fmtDate(g.first)} → ${fmtDate(g.last)}</p>
+          </div>
+        </div>
+        <div class="relative before:content-[''] before:absolute before:left-[5px] before:top-1 before:bottom-1 before:w-px before:bg-[rgba(108,222,107,.2)]">
+          ${items.map(node).join('')}
+        </div>
+      </div>`;
+    }).join('');
+    const totalDays=new Set(list.map(e=>e.date)).size;
+    tcnt.textContent=`// ${order.length} HỢP ĐỒNG · ${list.length} MỐC THEO DÕI QUA ${totalDays} NGÀY BÁO CÁO`;
+  }
+
+  tq.addEventListener('input',render);
+  tcust.addEventListener('change',render);
+  tsort.addEventListener('change',render);
+  document.getElementById('treset').addEventListener('click',()=>{tq.value='';tcust.value='ALL';tsort.value='asc';render();});
+})();
 
 /* ---- date nav (reads reports.json) ---- */
 (async()=>{try{
