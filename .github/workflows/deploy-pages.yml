@@ -26,6 +26,9 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
+        with:
+          # Tự bật GitHub Pages nếu nó bị tắt/mất cấu hình (tránh lỗi "There isn't a GitHub Pages site here")
+          enablement: true
       - name: Upload toàn bộ site (thư mục gốc repo)
         uses: actions/upload-pages-artifact@v3
         with:
