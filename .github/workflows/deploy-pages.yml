@@ -29,6 +29,8 @@ jobs:
         with:
           # Tự bật GitHub Pages nếu nó bị tắt/mất cấu hình (tránh lỗi "There isn't a GitHub Pages site here")
           enablement: true
+      - name: Sinh history.csv từ history.json (nguồn IMPORTDATA cho Google Sheets)
+        run: node scripts/export-csv.js
       - name: Upload toàn bộ site (thư mục gốc repo)
         uses: actions/upload-pages-artifact@v3
         with:
