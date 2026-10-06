@@ -26,6 +26,7 @@
   h1{margin:0;font-size:18px;font-weight:900;letter-spacing:.06em}
   .sub{font-size:11px;color:var(--muted)}
   .back{font-size:11px;padding:8px 12px;border:1px solid var(--line);text-decoration:none;border-radius:2px}
+  button.back{background:transparent;color:var(--primary);cursor:pointer}
   .back:hover{background:rgba(108,222,107,.08)}
   .panel{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:16px;margin-bottom:16px}
   .ph{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
@@ -83,7 +84,11 @@
         <div class="sub mono" id="span">Đang tải history.json…</div>
       </div>
     </div>
-    <a class="back caps mono" id="latest" href="index.html">← Báo cáo mới nhất</a>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="back caps mono dl" data-scope="last" title="Các mục trong báo cáo mới nhất, mở được bằng Excel">⤓ CSV ngày mới nhất</button>
+      <button class="back caps mono dl" data-scope="all" title="Toàn bộ lịch sử báo cáo, mở được bằng Excel">⤓ CSV toàn bộ lịch sử</button>
+      <a class="back caps mono" id="latest" href="index.html">← Báo cáo mới nhất</a>
+    </div>
   </header>
 
   <p id="err" class="mono">// KHÔNG TẢI ĐƯỢC history.json — mở trang qua GitHub Pages hoặc máy chủ web, không mở bằng file:// //</p>
@@ -99,7 +104,7 @@
       </div>
     </div>
     <div id="chart"><svg id="svg" role="img" aria-label="Biểu đồ cột chồng số hồ sơ Đỏ, Vàng, Xanh theo ngày"></svg><div id="tip"></div></div>
-    <p class="note">Bấm vào một cột để mở báo cáo ngày đó.</p>
+    <p class="note">Bấm vào một cột để mở báo cáo ngày đó. Kéo dữ liệu vào Google Sheets: <code class="mono" style="color:var(--primary)">=IMPORTDATA("https://jayjay9x.github.io/VHXK-report/history.csv")</code></p>
   </section>
 
   <section class="panel">
@@ -149,10 +154,10 @@
   const chip=r=>r?`<span class="chip" style="color:${CLR[r]};border-color:${CLR[r]}66;background:${CLR[r]}1a">${LBL[r]}</span>`:'<span class="chip muted" style="border-color:var(--line)">—</span>';
   const keyParts=k=>k.split(' ‖ ');
 
-  let SERIES=[],DAYS=[],AGING=[],RANGE=40,FILTER='RA';
+  let HIST=null,SERIES=[],DAYS=[],AGING=[],RANGE=40,FILTER='RA';
 
   fetch('history.json',{cache:'no-store'}).then(r=>r.json()).then(H=>{
-    SERIES=T.ragSeries(H);DAYS=T.byDay(H);AGING=T.aging(DAYS);
+    HIST=H;SERIES=T.ragSeries(H);DAYS=T.byDay(H);AGING=T.aging(DAYS);
     if(!SERIES.length)throw new Error('empty');
     const last=SERIES[SERIES.length-1].date;
     $('span').textContent=SERIES.length+' PHIÊN · '+fdy(SERIES[0].date)+' → '+fdy(last);
@@ -251,6 +256,17 @@
         <td><div class="cbar"><div class="track"><div class="fill" style="width:${r.recent/max*100}%"></div></div><span class="mono">${r.recent}</span></div></td>
         <td class="num">${r.before}</td><td class="num mono">${trend}</td><td>${now}</td></tr>`;}).join('');
   }
+
+  // Tải CSV ngay trên trình duyệt (BOM UTF-8 để Excel hiển thị đúng tiếng Việt).
+  document.querySelectorAll('.dl').forEach(b=>b.addEventListener('click',()=>{
+    if(!HIST)return;
+    const dates=Object.keys(HIST).sort(),last=dates[dates.length-1];
+    const src=b.dataset.scope==='last'?{[last]:HIST[last]}:HIST;
+    const blob=new Blob(['\ufeff'+T.toCSV(T.csvRows(src))],{type:'text/csv;charset=utf-8'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+    a.download=b.dataset.scope==='last'?`VHXK_${last}.csv`:`VHXK_lich-su_${dates[0]}_${last}.csv`;
+    document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},0);
+  }));
 
   function seg(id,attr,set){$(id).querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
     $(id).querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));set(b.dataset[attr]);}));}

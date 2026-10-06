@@ -109,7 +109,47 @@
       .sort((a, b) => (b.recent - a.recent) || (b.now.R - a.now.R) || (b.now.A - a.now.A));
   }
 
-  const api = { GAP, ctrCode, normCust, itemKey, byDay, ragSeries, aging, changes, customers };
+  // ---- Xuất CSV: 1 dòng = 1 mục trong 1 báo cáo ngày, ngày mới nhất ở trên ----
+  const STAGES = ['Booking', 'Sản xuất', 'Đóng hàng', 'Chứng từ', 'Thanh toán'];
+  const RAG_NAME = { R: 'Đỏ', A: 'Vàng', G: 'Xanh' };
+  const CSV_COLS = ['ngay', 'khach_hang', 'hop_dong', 'ma_ho_so', 'rag', 'rag_ten', 'giai_doan_so', 'giai_doan',
+    'so_lo', 'nhan', 'tieu_de', 'phu_trach', 'deadline', 'su_kien', 'viec_tiep_theo'];
+
+  function plainText(s) {
+    return String(s == null ? '' : s).replace(/<br\s*\/?>/gi, ' ').replace(/<[^>]*>/g, '')
+      .replace(/&nbsp;/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'").replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
+  }
+
+  function csvRows(H) {
+    const rows = [];
+    Object.keys(H).sort().reverse().forEach(date => {
+      (H[date] || []).forEach(it => {
+        const rag = RANK[it.rag] != null ? it.rag : 'A';
+        const at = Number(it.at) || '';
+        rows.push({
+          ngay: date, khach_hang: plainText(it.cust), hop_dong: plainText(it.ctr), ma_ho_so: itemKey(it),
+          rag, rag_ten: RAG_NAME[rag], giai_doan_so: at, giai_doan: STAGES[at - 1] || '',
+          so_lo: it.vol == null ? '' : it.vol, nhan: (it.tags || []).join(', '), tieu_de: plainText(it.title),
+          phu_trach: plainText(it.owner), deadline: plainText(it.dl),
+          su_kien: (it.facts || []).map(plainText).join(' | '), viec_tiep_theo: plainText(it.next),
+        });
+      });
+    });
+    return rows;
+  }
+
+  // Ô bắt đầu bằng = + @ bị Sheets/Excel hiểu là công thức → thêm dấu ' phía trước.
+  function csvCell(v) {
+    let s = String(v == null ? '' : v);
+    if (/^[=+@\t\r]/.test(s)) s = "'" + s;
+    return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  }
+  function toCSV(rows) {
+    return [CSV_COLS.join(',')].concat(rows.map(r => CSV_COLS.map(c => csvCell(r[c])).join(','))).join('\r\n') + '\r\n';
+  }
+
+  const api = { CSV_COLS, plainText, csvRows, toCSV, GAP, ctrCode, normCust, itemKey, byDay, ragSeries, aging, changes, customers };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Trends = api;
 })(this);

@@ -44,3 +44,25 @@ const real = T.byDay(require('../history.json'));
 assert.ok(T.aging(real).length > 0);
 
 console.log('trends.js: tất cả kiểm tra đều đạt');
+
+// ---- CSV ----
+const rows = T.csvRows({
+  '2026-10-05': [{ cust: 'A', ctr: 'A-555555', rag: 'G', at: 5, facts: ['x'] }],
+  '2026-10-06': [{ cust: 'B &amp; C', ctr: 'B-666666 (1, 2)', rag: 'R', at: 2, vol: 3, tags: ['money', 'ship'],
+    title: 'Có <b>"nháy"</b>', facts: ['một', 'hai'], next: '=SUM(1)', owner: 'Huyền', dl: '08/10' }],
+});
+assert.deepStrictEqual(rows.map(r => r.ngay), ['2026-10-06', '2026-10-05'], 'ngày mới nhất ở trên');
+assert.strictEqual(rows[0].khach_hang, 'B & C');
+assert.strictEqual(rows[0].tieu_de, 'Có "nháy"');
+assert.strictEqual(rows[0].giai_doan, 'Sản xuất');
+assert.strictEqual(rows[0].su_kien, 'một | hai');
+const csv = T.toCSV(rows).split('\r\n');
+assert.strictEqual(csv[0], T.CSV_COLS.join(','));
+assert.ok(csv[1].includes('"B-666666 (1, 2)"'), 'ô có dấu phẩy được bọc ngoặc kép');
+assert.ok(csv[1].includes('"Có ""nháy"""'), 'ngoặc kép được nhân đôi');
+assert.ok(csv[1].includes(",'=SUM(1)"), 'chặn công thức');
+assert.strictEqual(csv.length, 4, 'tiêu đề + 2 dòng + dòng trống cuối');
+assert.strictEqual(T.csvRows(require('../history.json')).length,
+  Object.values(require('../history.json')).reduce((n, d) => n + d.length, 0), 'không mất dòng nào');
+
+console.log('CSV: tất cả kiểm tra đều đạt');
