@@ -66,3 +66,8 @@ assert.strictEqual(T.csvRows(require('../history.json')).length,
   Object.values(require('../history.json')).reduce((n, d) => n + d.length, 0), 'không mất dòng nào');
 
 console.log('CSV: tất cả kiểm tra đều đạt');
+
+// ---- Dải RAG ----
+assert.deepStrictEqual(T.strip(days, 'X ‖ 111111', 3).map(s => s.rag), ['R', null, 'R']);
+assert.strictEqual(T.strip(days, 'X ‖ 111111', 99).length, 4);
+console.log('strip: tất cả kiểm tra đều đạt');

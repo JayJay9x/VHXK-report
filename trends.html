@@ -4,100 +4,379 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Xu hướng &amp; Tồn đọng — VHXK AAN</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <style>
+  /* ===== Skin RICE-CORE OPS — cùng bảng màu & hiệu ứng với các báo cáo ngày ===== */
   :root{
-    --bg:#0a100a;--panel:rgba(18,28,18,.82);--line:rgba(108,222,107,.18);
-    --ink:#dee4da;--muted:#9aa595;--primary:#6cde6b;--brand:#43b649;
+    --bg:#0f150f;--terminal:#060A06;--surf:#1b211b;--surf-low:#171d17;
+    --ink:#dee4da;--muted:#bdcab7;--primary:#6cde6b;--brand:#43b649;--line:rgba(67,182,73,.2);
     --R:#EF4444;--A:#F59E0B;--G:#43B649;
   }
-  *{box-sizing:border-box}
-  html,body{margin:0;background:var(--bg);color:var(--ink);
-    font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;font-size:14px}
-  body{background:radial-gradient(1200px 600px at 20% -10%,rgba(67,182,73,.10),transparent 60%),var(--bg);min-height:100vh}
+  *{box-sizing:border-box;font-family:'Inter',system-ui,sans-serif}
+  html{scroll-behavior:smooth}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-size:14px}
   a{color:var(--primary)}
-  .mono{font-family:'JetBrains Mono',ui-monospace,monospace}
-  .caps{text-transform:uppercase;letter-spacing:.12em;font-weight:700}
-  .wrap{max-width:1280px;margin:0 auto;padding:20px 16px 48px}
-  header{display:flex;flex-wrap:wrap;align-items:center;gap:14px;justify-content:space-between;
-    border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:18px}
-  .brand{display:flex;align-items:center;gap:12px}
-  .brand img{height:38px;width:auto}
-  h1{margin:0;font-size:18px;font-weight:900;letter-spacing:.06em}
-  .sub{font-size:11px;color:var(--muted)}
-  .back{font-size:11px;padding:8px 12px;border:1px solid var(--line);text-decoration:none;border-radius:2px}
-  button.back{background:transparent;color:var(--primary);cursor:pointer}
-  .back:hover{background:rgba(108,222,107,.08)}
-  .panel{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:16px;margin-bottom:16px}
-  .ph{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
-  .ph h2{margin:0;font-size:12px;color:var(--primary)}
-  .note{font-size:11px;color:var(--muted);margin:6px 0 0}
-  .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
-  .kpi{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--line);border-radius:4px;padding:14px}
-  .kpi .l{font-size:10px;color:var(--muted)}
-  .kpi .v{font-size:30px;font-weight:900;margin:4px 0 2px}
-  .kpi .d{font-size:11px;color:var(--muted)}
+  .mono,.mono *{font-family:'JetBrains Mono',monospace}
+  .lbl-caps{font-family:'JetBrains Mono',monospace;letter-spacing:.1em;font-weight:700;text-transform:uppercase}
+  .material-symbols-outlined{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;line-height:1;
+    letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;direction:ltr;
+    -webkit-font-smoothing:antialiased;font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24}
+  .no-msym .material-symbols-outlined{display:none!important}
+  .data-grid-overlay{background-image:radial-gradient(rgba(108,222,107,.05) 1px,transparent 1px);background-size:32px 32px}
+  .glass-panel{background:rgba(15,21,15,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(108,222,107,.1)}
+  .laser{border-color:var(--line)!important}
+  .scan-line{width:100%;height:2px;background:linear-gradient(90deg,transparent,rgba(108,222,107,.5),transparent);position:absolute;top:0;left:-100%;animation:scan 3s infinite linear;pointer-events:none}
+  @keyframes scan{0%{left:-100%}100%{left:100%}}
+  .custom-scrollbar::-webkit-scrollbar{width:5px;height:5px}
+  .custom-scrollbar::-webkit-scrollbar-track{background:rgba(0,0,0,.1)}
+  .custom-scrollbar::-webkit-scrollbar-thumb{background:rgba(108,222,107,.3);border-radius:10px}
+
+  /* ---- khung trang: top bar + sidebar giống báo cáo ngày ---- */
+  #bg-shader{position:fixed;inset:0;width:100%;height:100%;opacity:.25;pointer-events:none;z-index:0}
+  header.top{position:fixed;top:0;left:0;right:0;z-index:50;height:64px;display:flex;align-items:center;justify-content:space-between;
+    padding:0 20px;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:12px;min-width:0}
+  .brand img{height:40px;width:auto;border-radius:6px}
+  header h1{margin:0;font-size:18px;font-weight:900;color:var(--primary);letter-spacing:-.01em;line-height:1;white-space:nowrap}
+  header .sub{font-size:10px;color:var(--muted);margin-top:4px}
+  header nav{display:flex;gap:28px;font-size:11px}
+  header nav a{color:var(--muted);text-decoration:none;padding-bottom:4px;transition:color .15s}
+  header nav a:hover{color:var(--primary)}
+  header nav a.on{color:var(--primary);border-bottom:2px solid var(--primary)}
+  .clockbox{text-align:right}
+  .clockbox p{margin:0}
+  .live{display:inline-flex;align-items:center;gap:6px}
+  .live i{width:7px;height:7px;border-radius:50%;background:var(--primary);box-shadow:0 0 8px var(--primary);animation:blink 1.6s ease-in-out infinite}
+  @keyframes blink{50%{opacity:.25}}
+  aside.side{position:fixed;left:0;top:64px;bottom:0;width:240px;z-index:40;background:var(--terminal);border-right:1px solid var(--line);
+    display:flex;flex-direction:column;overflow-y:auto}
+  .side .sec{color:var(--primary);font-size:10px;border-left:2px solid var(--primary);padding-left:12px;margin:0 0 14px}
+  .side ul{list-style:none;margin:0;padding:0}
+  .side li a{display:flex;align-items:center;gap:12px;padding:11px 12px;color:var(--muted);text-decoration:none;font-size:11px;
+    border-left:4px solid transparent;transition:background .15s,color .15s,border-color .15s}
+  .side li a:hover{background:var(--surf-low);color:var(--primary);text-shadow:0 0 8px rgba(108,222,107,.6)}
+  .side li a.on{color:var(--primary);border-left-color:var(--G);background:rgba(67,182,73,.12)}
+  a.dt{padding:5px 11px;border:1px solid rgba(67,182,73,.25);color:#bdcab7;font-size:11px;font-family:'JetBrains Mono',monospace;letter-spacing:.05em;transition:.15s;border-radius:2px;text-decoration:none}
+  a.dt:hover{color:#6cde6b;border-color:#6cde6b}
+  a.dt.current{background:#6cde6b;color:#003909;border-color:#6cde6b;font-weight:700}
+  .zalo{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;background:var(--primary);color:#003909;
+    font-size:11px;text-decoration:none;transition:filter .15s,transform .1s}
+  .zalo:hover{filter:brightness(1.1)} .zalo:active{transform:scale(.98)}
+  main{position:relative;z-index:10;margin-left:240px;padding:92px 28px 48px;min-height:100vh}
+  @media (max-width:1023px){aside.side{display:none}main{margin-left:0}}
+  @media (max-width:767px){header nav{display:none}main{padding:84px 16px 40px}}
+  @media (max-width:520px){.clockbox{display:none}header h1{font-size:14px}header .sub{display:none}}
+
+  /* ---- tiêu đề trang ---- */
+  .pagehead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:20px}
+  .pagehead h2{margin:0;font-size:44px;font-weight:900;letter-spacing:-.02em;line-height:1.1}
+  .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+  .chips span{display:inline-flex;gap:8px;padding:4px 12px;background:var(--surf);border:1px solid var(--line);border-radius:2px;font-size:10px}
+  .chips b{color:var(--primary)} .chips em{font-style:normal;color:var(--muted)}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;font-size:11px;color:var(--primary);background:rgba(15,21,15,.7);
+    border:1px solid var(--line);cursor:pointer;text-decoration:none;transition:background .15s,box-shadow .15s,transform .1s}
+  .btn:hover{background:rgba(108,222,107,.1);box-shadow:0 0 14px rgba(108,222,107,.25)}
+  .btn:active{transform:scale(.97)}
+  .btn .material-symbols-outlined{font-size:16px}
+  @media (max-width:767px){.pagehead h2{font-size:32px}}
+
+  /* ---- băng tin chạy ---- */
+  .ticker{display:flex;align-items:stretch;margin-bottom:20px;overflow:hidden;border:1px solid var(--line)}
+  .ticker .lab{flex:none;display:flex;align-items:center;gap:8px;padding:8px 14px;background:rgba(239,68,68,.12);color:var(--R);font-size:10px;border-right:1px solid var(--line)}
+  .ticker .lab i{width:7px;height:7px;border-radius:50%;background:var(--R);box-shadow:0 0 8px var(--R);animation:blink 1.2s infinite}
+  .ticker .rail{flex:1;overflow:hidden;position:relative;-webkit-mask:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);mask:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
+  .ticker .run{display:inline-flex;gap:36px;white-space:nowrap;padding:8px 0;font-size:11.5px;animation:tick var(--dur,60s) linear infinite}
+  .ticker:hover .run{animation-play-state:paused}
+  .ticker .run span b{font-family:'JetBrains Mono',monospace}
+  @keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* ---- KPI ---- */
+  .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:24px}
+  .kpi{position:relative;overflow:hidden;padding:16px 16px 12px;border-left:4px solid var(--line)}
+  .kpi .l{font-size:10px;color:var(--muted);display:flex;align-items:center;gap:6px}
+  .kpi .l .material-symbols-outlined{font-size:16px}
+  .kpi .v{font-family:'JetBrains Mono',monospace;font-size:34px;font-weight:700;margin:6px 0 2px;letter-spacing:-.02em}
+  .kpi .d{font-size:11px;color:var(--muted);min-height:16px}
+  .kpi svg{display:block;width:100%;height:34px;margin-top:8px}
+  .kpi .spark{fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .kpi .spark-area{opacity:.14}
+  .kpi.alert::before{content:'';position:absolute;top:10px;right:10px;width:8px;height:8px;border-radius:50%;background:var(--R);box-shadow:0 0 10px var(--R);animation:blink 1s infinite}
+  @media (max-width:1100px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media (max-width:520px){.kpis{grid-template-columns:1fr}}
+
+  /* ---- panel ---- */
+  .panel{position:relative;padding:20px;margin-bottom:24px;overflow:hidden}
+  .ph{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
+  .ph h3{margin:0;font-size:11px;color:var(--primary);display:flex;align-items:center;gap:8px}
+  .ph h3 .material-symbols-outlined{font-size:18px}
+  .ph .tagid{font-size:10px;color:var(--muted)}
+  .note{font-size:11px;color:var(--muted);margin:10px 0 0}
   .seg{display:inline-flex;border:1px solid var(--line);border-radius:2px;overflow:hidden}
-  .seg button{background:transparent;color:var(--muted);border:0;padding:6px 10px;font:700 10px/1 'JetBrains Mono',monospace;cursor:pointer}
+  .seg button{background:transparent;color:var(--muted);border:0;padding:7px 11px;font:700 10px/1 'JetBrains Mono',monospace;letter-spacing:.06em;cursor:pointer;transition:background .15s,color .15s}
   .seg button+button{border-left:1px solid var(--line)}
-  .seg button.on{background:rgba(108,222,107,.14);color:var(--primary)}
-  .legend{display:flex;gap:14px;font-size:11px;color:var(--muted)}
+  .seg button:hover{color:var(--primary)}
+  .seg button.on{background:rgba(108,222,107,.14);color:var(--primary);box-shadow:inset 0 -2px 0 var(--primary)}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:11px;color:var(--muted)}
   .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+  .search{display:flex;align-items:center;gap:8px;background:var(--terminal);border:1px solid var(--line);padding:0 10px;min-width:220px;transition:border-color .15s,box-shadow .15s}
+  .search:focus-within{border-color:var(--primary);box-shadow:0 0 12px rgba(108,222,107,.25)}
+  .search input{background:transparent;border:0;outline:0;color:var(--ink);padding:8px 0;font:12px 'JetBrains Mono',monospace;width:100%}
+  .search .material-symbols-outlined{font-size:16px;color:var(--muted)}
+  .search kbd{font:10px 'JetBrains Mono',monospace;color:var(--muted);border:1px solid var(--line);padding:1px 5px;border-radius:2px}
+
+  /* ---- biểu đồ ---- */
   #chart{position:relative}
-  #chart svg{display:block;width:100%;height:240px}
-  #chart .bar{cursor:pointer}
-  #tip{position:absolute;pointer-events:none;background:#0f170f;border:1px solid var(--line);border-radius:4px;
-    padding:8px 10px;font-size:11px;white-space:nowrap;display:none;z-index:2}
+  #chart svg{display:block;width:100%;height:260px}
+  #chart .bar{cursor:pointer;transition:opacity .15s}
+  #chart svg.hovering .bar{opacity:.35}
+  #chart svg.hovering .bar.hot{opacity:1;filter:drop-shadow(0 0 6px rgba(108,222,107,.6))}
+  #chart .grow{transform-box:fill-box;transform-origin:50% 100%;animation:grow .7s cubic-bezier(.2,.7,.3,1) both}
+  @keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+  #chart .xhair{stroke:var(--primary);stroke-dasharray:3 3;opacity:0;pointer-events:none}
+  #chart svg.hovering .xhair{opacity:.6}
+  #tip{position:absolute;pointer-events:none;background:rgba(6,10,6,.95);border:1px solid rgba(108,222,107,.4);border-radius:2px;
+    padding:9px 11px;font-size:11px;white-space:nowrap;display:none;z-index:5;box-shadow:0 0 16px rgba(108,222,107,.2)}
+
+  /* ---- bảng ---- */
   .tbl{width:100%;overflow-x:auto}
-  table{width:100%;border-collapse:collapse;font-size:12px;min-width:900px}
-  th{text-align:left;font-size:10px;color:var(--muted);padding:8px;border-bottom:1px solid var(--line);white-space:nowrap}
-  td{padding:9px 8px;border-bottom:1px solid rgba(108,222,107,.07);vertical-align:top}
-  td.num{text-align:right;font-family:'JetBrains Mono',monospace;white-space:nowrap}
-  th.num{text-align:right}
+  table{width:100%;border-collapse:collapse;font-size:12px;min-width:1180px}
+  #sec-aging td:first-child{min-width:230px}
+  #sec-aging td:nth-child(7){min-width:120px}
+  th{text-align:left;font:700 10px 'JetBrains Mono',monospace;letter-spacing:.08em;color:var(--muted);padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap;text-transform:uppercase}
+  td{padding:10px 8px;border-bottom:1px solid rgba(108,222,107,.07);vertical-align:top}
+  td.num,th.num{text-align:right}
+  td.num{font-family:'JetBrains Mono',monospace;white-space:nowrap}
+  tbody tr.row{cursor:pointer;transition:background .15s,box-shadow .15s}
+  tbody tr.row:hover{background:rgba(108,222,107,.05);box-shadow:inset 3px 0 0 var(--primary)}
+  tbody tr.row.esc{box-shadow:inset 3px 0 0 var(--R)}
+  tbody tr.row.esc:hover{background:rgba(239,68,68,.06)}
+  tbody tr.row.open{background:rgba(108,222,107,.06)}
+  tr.detail td{background:rgba(6,10,6,.6);padding:0;border-bottom:1px solid var(--line)}
+  tr.detail .in{padding:12px 16px 14px 20px;animation:drop .25s ease}
+  @keyframes drop{from{opacity:0;transform:translateY(-4px)}to{opacity:1}}
+  tr.detail ul{margin:0 0 8px;padding:0;list-style:none}
+  tr.detail li{font-size:12px;color:var(--muted);padding:2px 0}
+  tr.detail li::before{content:'▸ ';color:var(--primary)}
   .chip{display:inline-block;font:700 9px/1 'JetBrains Mono',monospace;padding:4px 6px;border:1px solid;border-radius:2px;white-space:nowrap}
-  .esc{display:inline-block;margin-top:4px;font:700 9px/1 'JetBrains Mono',monospace;padding:3px 5px;background:var(--R);color:#fff;border-radius:2px}
+  .esc-tag{display:inline-flex;align-items:center;gap:6px;margin-top:6px;font:700 9px/1 'JetBrains Mono',monospace;padding:4px 6px;
+    background:rgba(239,68,68,.15);color:var(--R);border:1px solid rgba(239,68,68,.5);border-radius:2px;letter-spacing:.06em}
+  .esc-tag i{width:6px;height:6px;border-radius:50%;background:var(--R);box-shadow:0 0 0 0 rgba(239,68,68,.7);animation:ping 1.4s infinite}
+  @keyframes ping{0%{box-shadow:0 0 0 0 rgba(239,68,68,.7)}80%,100%{box-shadow:0 0 0 7px rgba(239,68,68,0)}}
   .cust{font-weight:700}
   .code{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--primary)}
-  .ttl{color:var(--ink)}
   .muted{color:var(--muted)}
-  .chg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
-  .chg h3{margin:0 0 8px;font-size:10px}
-  .chg ul{list-style:none;margin:0;padding:0}
-  .chg li{font-size:11.5px;padding:6px 0;border-bottom:1px solid rgba(108,222,107,.07)}
+  .caret{display:inline-block;transition:transform .2s;color:var(--muted);font-size:10px;margin-right:4px}
+  tr.open .caret{transform:rotate(90deg);color:var(--primary)}
+
+  /* dải RAG 30 phiên ("nhịp tim" của hồ sơ) */
+  .strip{display:flex;gap:2px;align-items:flex-end;height:22px}
+  .strip a{display:block;width:6px;border-radius:1px;transition:transform .12s,filter .12s}
+  .strip a.R{height:22px;background:var(--R)} .strip a.A{height:15px;background:var(--A)} .strip a.G{height:9px;background:var(--G)}
+  .strip a.x{height:3px;background:rgba(189,202,183,.18)}
+  .strip a:hover{transform:scaleY(1.25);filter:brightness(1.3) drop-shadow(0 0 4px currentColor)}
+
+  /* ---- chuyển biến ---- */
+  .chg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+  .chg .col{border:1px solid var(--line);background:rgba(6,10,6,.45);padding:12px;min-width:0}
+  .chg h4{margin:0 0 10px;font-size:10px;display:flex;justify-content:space-between}
+  .chg ul{list-style:none;margin:0;padding:0;max-height:420px;overflow-y:auto}
+  .chg li{font-size:11.5px;padding:8px;margin-bottom:6px;border:1px solid transparent;border-left:2px solid var(--line);transition:border-color .15s,background .15s,transform .15s}
+  .chg li:hover{border-color:rgba(108,222,107,.3);background:rgba(108,222,107,.05);transform:translateX(3px)}
   .chg .empty{color:var(--muted);font-size:11px}
+  @media (max-width:1100px){.chg{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media (max-width:520px){.chg{grid-template-columns:1fr}}
+
+  /* ---- khách hàng ---- */
   .cbar{display:flex;align-items:center;gap:8px}
   .cbar .track{flex:1;height:8px;background:rgba(255,255,255,.04);border-radius:2px;overflow:hidden;min-width:60px}
-  .cbar .fill{height:100%;background:var(--R);border-radius:0 2px 2px 0}
+  .cbar .fill{height:100%;width:0;background:linear-gradient(90deg,rgba(239,68,68,.5),var(--R));border-radius:0 2px 2px 0;box-shadow:0 0 8px rgba(239,68,68,.5);transition:width 1s cubic-bezier(.2,.7,.3,1)}
   .up{color:var(--R)} .down{color:var(--G)}
-  #err{display:none;color:var(--A);font-size:12px}
-  @media (max-width:900px){.kpis,.chg{grid-template-columns:repeat(2,minmax(0,1fr))}}
-  @media (max-width:520px){.kpis,.chg{grid-template-columns:1fr}.kpi .v{font-size:26px}}
+  #err{display:none;color:var(--A);font-size:12px;margin-bottom:16px}
+
+  /* ---- xuất hiện khi cuộn tới ---- */
+  .reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.7,.3,1)}
+  .reveal.in{opacity:1;transform:none}
+
+  @media (prefers-reduced-motion:reduce){
+    .scan-line{display:none}*{scroll-behavior:auto!important}
+    .ticker .run,.live i,.kpi.alert::before,.esc-tag i,#chart .grow{animation:none}
+    .reveal{opacity:1;transform:none;transition:none}
+  }
+  @media print{
+    #bg-shader,aside.side,header.top,.ticker,#cf-cursor,#cf-spark,.btn,.seg,.search{display:none!important}
+    main{margin:0;padding:0}body{background:#fff;color:#000}.glass-panel{background:#fff;border-color:#ccc}
+  }
 </style>
 </head>
-<body>
-<div class="wrap">
-  <header>
-    <div class="brand">
-      <img src="logo.png" alt="AAN"/>
-      <div>
-        <h1>XU HƯỚNG &amp; TỒN ĐỌNG</h1>
-        <div class="sub mono" id="span">Đang tải history.json…</div>
+<body class="data-grid-overlay">
+<!-- ===== CYBER-FX (giống các báo cáo ngày) ===== -->
+<style id="cyber-fx">
+  #cf-cursor{position:fixed;top:0;left:0;width:360px;height:360px;margin:-180px 0 0 -180px;
+    border-radius:50%;pointer-events:none;z-index:9998;opacity:0;transition:opacity .35s;
+    background:radial-gradient(circle,rgba(108,222,107,.16),rgba(108,222,107,.05) 42%,transparent 70%);
+    mix-blend-mode:screen;will-change:transform}
+  #cf-spark{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9997}
+  .cf-title{position:relative;display:inline-block;isolation:isolate}
+  header .cf-title{animation:cf-neon 3.2s ease-in-out infinite}
+  @keyframes cf-neon{
+    0%,100%{text-shadow:0 0 6px rgba(108,222,107,.55),0 0 14px rgba(108,222,107,.30)}
+    50%{text-shadow:0 0 11px rgba(108,222,107,.95),0 0 24px rgba(108,222,107,.55),0 0 44px rgba(67,182,73,.40)}
+  }
+  main h2.cf-title{text-shadow:0 0 16px rgba(108,222,107,.28)}
+  .cf-underline{position:absolute;left:0;right:0;bottom:-9px;height:2px;pointer-events:none;
+    background:linear-gradient(90deg,transparent,#6cde6b,#aef5ad,#6cde6b,transparent);
+    background-size:200% 100%;filter:drop-shadow(0 0 6px #6cde6b);
+    animation:cf-sweep 2.6s linear infinite}
+  @keyframes cf-sweep{0%{background-position:200% 0}100%{background-position:-200% 0}}
+  .cf-title[data-text]::before,.cf-title[data-text]::after{
+    content:attr(data-text);position:absolute;left:0;top:0;width:100%;
+    opacity:0;pointer-events:none;transition:opacity .15s}
+  .cf-title[data-text]:hover::before{opacity:.85;color:#22d3ee;mix-blend-mode:screen;
+    animation:cf-glx .45s steps(2) infinite}
+  .cf-title[data-text]:hover::after{opacity:.85;color:#f0468b;mix-blend-mode:screen;
+    animation:cf-gly .45s steps(2) infinite}
+  @keyframes cf-glx{0%{transform:translate(0,0)}25%{transform:translate(-2px,1px)}
+    50%{transform:translate(2px,-1px)}75%{transform:translate(-1px,-1px)}100%{transform:translate(1px,1px)}}
+  @keyframes cf-gly{0%{transform:translate(0,0)}25%{transform:translate(2px,-1px)}
+    50%{transform:translate(-2px,1px)}75%{transform:translate(1px,1px)}100%{transform:translate(-1px,-1px)}}
+  main .glass-panel{position:relative;
+    transition:transform .25s cubic-bezier(.2,.7,.3,1),box-shadow .25s,border-color .25s}
+  main .glass-panel:hover{transform:translateY(-3px);
+    border-color:rgba(108,222,107,.55)!important;
+    box-shadow:0 12px 32px -10px rgba(0,0,0,.6),0 0 18px rgba(108,222,107,.25),inset 0 0 18px rgba(108,222,107,.06)}
+  main .glass-panel::after{content:'';position:absolute;inset:0;border-radius:inherit;padding:1px;
+    background:linear-gradient(120deg,transparent 28%,rgba(108,222,107,.85),transparent 72%);
+    background-size:300% 300%;opacity:0;transition:opacity .25s;pointer-events:none;
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;mask-composite:exclude}
+  main .glass-panel:hover::after{opacity:1;animation:cf-edge 1.8s linear infinite}
+  @keyframes cf-edge{0%{background-position:0% 50%}100%{background-position:300% 50%}}
+  /* panel lớn chứa bảng: chỉ sáng viền, không nâng (tránh rung khi rê qua từng dòng) */
+  main .glass-panel.panel:hover{transform:none}
+  header nav a:hover,aside a:hover{text-shadow:0 0 8px rgba(108,222,107,.6)}
+  @media (prefers-reduced-motion:reduce){
+    #cf-cursor,#cf-spark,.cf-underline{display:none}
+    header .cf-title{animation:none}
+    main .glass-panel:hover{transform:none}
+    main .glass-panel:hover::after{animation:none}
+  }
+</style>
+<script>
+(function(){
+  function init(){
+    var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+    function deco(el){if(!el)return;el.classList.add('cf-title');
+      if(!el.getAttribute('data-text'))el.setAttribute('data-text',(el.textContent||'').trim());}
+    var h1=document.querySelector('header h1');
+    var h2=document.querySelector('main h2');
+    deco(h1);deco(h2);
+    if(h2&&!reduce){var u=document.createElement('i');u.className='cf-underline';h2.appendChild(u);}
+    if(reduce)return;
+    var cur=document.createElement('div');cur.id='cf-cursor';document.body.appendChild(cur);
+    var cv=document.createElement('canvas');cv.id='cf-spark';document.body.appendChild(cv);
+    var ctx=cv.getContext('2d'),DPR=Math.min(window.devicePixelRatio||1,2),W,H;
+    function resize(){W=cv.width=innerWidth*DPR;H=cv.height=innerHeight*DPR;
+      cv.style.width=innerWidth+'px';cv.style.height=innerHeight+'px';}
+    resize();addEventListener('resize',resize);
+    var parts=[],lx=0,ly=0,moved=false;
+    addEventListener('mousemove',function(e){
+      cur.style.transform='translate('+e.clientX+'px,'+e.clientY+'px)';cur.style.opacity=1;
+      var dx=e.clientX-lx,dy=e.clientY-ly,d=Math.hypot(dx,dy);
+      if(moved&&d>4){var n=Math.min(3,(d/8|0)+1);
+        for(var i=0;i<n;i++)parts.push({x:e.clientX*DPR,y:e.clientY*DPR,
+          vx:(Math.random()-.5)*1.4*DPR,vy:(Math.random()-.5)*1.4*DPR,
+          life:1,r:(Math.random()*1.6+.6)*DPR});}
+      lx=e.clientX;ly=e.clientY;moved=true;
+    },{passive:true});
+    addEventListener('mouseout',function(){cur.style.opacity=0;});
+    (function loop(){ctx.clearRect(0,0,W,H);
+      for(var i=parts.length-1;i>=0;i--){var p=parts[i];p.x+=p.vx;p.y+=p.vy;p.life-=.035;
+        if(p.life<=0){parts.splice(i,1);continue;}
+        ctx.globalAlpha=p.life;ctx.fillStyle='rgba(108,222,107,'+p.life+')';
+        ctx.shadowBlur=8*DPR;ctx.shadowColor='#6cde6b';
+        ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,6.2832);ctx.fill();}
+      ctx.globalAlpha=1;ctx.shadowBlur=0;requestAnimationFrame(loop);})();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
+  else init();
+})();
+</script>
+<!-- ===== /CYBER-FX ===== -->
+<canvas id="bg-shader"></canvas>
+
+<!-- ===== TOP BAR ===== -->
+<header class="top glass-panel">
+  <div class="brand">
+    <img src="logo.png" alt="AAn — Lành gạo Ngon cơm"/>
+    <div>
+      <h1>RICE-CORE OPS EXPORT DEPT.</h1>
+      <p class="sub lbl-caps">AAN FOOD JSC · TREND &amp; BACKLOG MONITOR</p>
+    </div>
+  </div>
+  <nav class="lbl-caps">
+    <a class="js-latest" href="index.html">DASHBOARD</a>
+    <a class="on" href="#">TRENDS</a>
+    <a href="#sec-aging">BACKLOG</a>
+    <a href="#sec-cust">CUSTOMERS</a>
+  </nav>
+  <div class="clockbox">
+    <p class="lbl-caps" style="font-size:10px" id="clock">—</p>
+    <p class="lbl-caps live" style="font-size:9px;color:var(--primary);opacity:.8"><i></i>SYSTEM V.2.4.0 · LIVE</p>
+  </div>
+</header>
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="side custom-scrollbar">
+  <div style="padding:20px;flex:1">
+    <div class="sec lbl-caps" style="margin-bottom:22px">COMMAND MODULES</div>
+    <ul>
+      <li><a class="js-latest lbl-caps" href="index.html"><span class="material-symbols-outlined">language</span>BÁO CÁO NGÀY</a></li>
+      <li><a class="on lbl-caps" href="#top"><span class="material-symbols-outlined">monitoring</span>XU HƯỚNG &amp; TỒN ĐỌNG</a></li>
+      <li><a class="lbl-caps" href="#sec-chart"><span class="material-symbols-outlined">bar_chart</span>DIỄN BIẾN RAG</a></li>
+      <li><a class="lbl-caps" href="#sec-aging"><span class="material-symbols-outlined">hourglass_top</span>HỒ SƠ TỒN ĐỌNG</a></li>
+      <li><a class="lbl-caps" href="#sec-chg"><span class="material-symbols-outlined">swap_vert</span>CHUYỂN BIẾN</a></li>
+      <li><a class="lbl-caps" href="#sec-cust"><span class="material-symbols-outlined">groups</span>KHÁCH HÀNG</a></li>
+    </ul>
+    <div class="sec lbl-caps" style="margin-top:30px">LỊCH SỬ BÁO CÁO</div>
+    <nav style="display:flex;flex-wrap:wrap;gap:8px;padding-left:4px" id="datenav"></nav>
+  </div>
+  <div style="padding:20px">
+    <a href="https://zalo.me/4526550082206503187" target="_blank" rel="noopener" class="zalo lbl-caps"><span class="material-symbols-outlined" style="font-size:18px">forum</span>HỎI DỮ LIỆU (ZALO)</a>
+  </div>
+</aside>
+
+<!-- ===== MAIN ===== -->
+<main id="top">
+  <div class="pagehead">
+    <div>
+      <h2>Trend &amp; Backlog</h2>
+      <div class="chips lbl-caps">
+        <span><em>DỮ LIỆU:</em><b id="c-n">—</b></span>
+        <span><em>KỲ:</em><b id="c-span">—</b></span>
+        <span><em>NGUỒN:</em><b>HISTORY.JSON</b></span>
       </div>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="back caps mono dl" data-scope="last" title="Các mục trong báo cáo mới nhất, mở được bằng Excel">⤓ CSV ngày mới nhất</button>
-      <button class="back caps mono dl" data-scope="all" title="Toàn bộ lịch sử báo cáo, mở được bằng Excel">⤓ CSV toàn bộ lịch sử</button>
-      <a class="back caps mono" id="latest" href="index.html">← Báo cáo mới nhất</a>
+      <button class="btn lbl-caps dl" data-scope="last" title="Các mục trong báo cáo mới nhất, mở được bằng Excel"><span class="material-symbols-outlined">download</span>CSV NGÀY MỚI NHẤT</button>
+      <button class="btn lbl-caps dl" data-scope="all" title="Toàn bộ lịch sử báo cáo, mở được bằng Excel"><span class="material-symbols-outlined">dataset</span>CSV TOÀN BỘ</button>
+      <button class="btn lbl-caps" onclick="window.print()"><span class="material-symbols-outlined">print</span>XUẤT PDF</button>
     </div>
-  </header>
+  </div>
 
   <p id="err" class="mono">// KHÔNG TẢI ĐƯỢC history.json — mở trang qua GitHub Pages hoặc máy chủ web, không mở bằng file:// //</p>
 
+  <div class="ticker glass-panel" id="ticker" hidden>
+    <div class="lab lbl-caps"><i></i>LIVE FEED</div>
+    <div class="rail"><div class="run" id="tickrun"></div></div>
+  </div>
+
   <section class="kpis" id="kpis"></section>
 
-  <section class="panel">
+  <section class="glass-panel panel reveal" id="sec-chart">
+    <div class="scan-line"></div>
     <div class="ph">
-      <h2 class="caps">Số hồ sơ theo mức RAG mỗi phiên báo cáo</h2>
+      <h3 class="lbl-caps"><span class="material-symbols-outlined">bar_chart</span>SỐ HỒ SƠ THEO MỨC RAG MỖI PHIÊN BÁO CÁO</h3>
       <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
         <div class="legend"><span><i style="background:var(--R)"></i>Đỏ · Critical</span><span><i style="background:var(--A)"></i>Vàng · Monitoring</span><span><i style="background:var(--G)"></i>Xanh · On-track</span></div>
         <div class="seg" id="range"><button data-n="20">20 PHIÊN</button><button data-n="40" class="on">40 PHIÊN</button><button data-n="0">TẤT CẢ</button></div>
@@ -107,14 +386,18 @@
     <p class="note">Bấm vào một cột để mở báo cáo ngày đó. Kéo dữ liệu vào Google Sheets: <code class="mono" style="color:var(--primary)">=IMPORTDATA("https://jayjay9x.github.io/VHXK-report/history.csv")</code></p>
   </section>
 
-  <section class="panel">
+  <section class="glass-panel panel reveal" id="sec-aging">
     <div class="ph">
-      <h2 class="caps">Hồ sơ đang mở — xếp theo mức tồn đọng</h2>
-      <div class="seg" id="ragf"><button data-f="R">CHỈ ĐỎ</button><button data-f="RA" class="on">ĐỎ + VÀNG</button><button data-f="ALL">TẤT CẢ</button></div>
+      <h3 class="lbl-caps"><span class="material-symbols-outlined">hourglass_top</span>HỒ SƠ ĐANG MỞ — XẾP THEO MỨC TỒN ĐỌNG</h3>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <label class="search"><span class="material-symbols-outlined">search</span><input id="q" placeholder="Lọc KH, mã HĐ, phụ trách…" autocomplete="off"/><kbd>/</kbd></label>
+        <div class="seg" id="ragf"><button data-f="R">CHỈ ĐỎ</button><button data-f="RA" class="on">ĐỎ + VÀNG</button><button data-f="ALL">TẤT CẢ</button></div>
+      </div>
     </div>
-    <div class="tbl"><table>
+    <div class="tbl custom-scrollbar"><table>
       <thead><tr>
         <th>Khách hàng · Hồ sơ</th><th>Hiện tại</th>
+        <th title="Mỗi vạch là 1 phiên báo cáo, cũ → mới. Cao/đỏ = Đỏ, vừa/vàng = Vàng, thấp/xanh = Xanh, vạch mờ = không có trong báo cáo. Bấm vạch để mở báo cáo ngày đó.">Nhịp RAG 30 phiên</th>
         <th class="num" title="Số phiên báo cáo liên tiếp gần nhất đang ở mức Đỏ">Đỏ liên tiếp</th>
         <th class="num" title="Tổng số phiên hồ sơ bị Đỏ trong toàn bộ lịch sử">Tổng phiên đỏ</th>
         <th class="num" title="Số phiên hồ sơ có mặt liên tục trong báo cáo">Đã mở</th>
@@ -125,19 +408,19 @@
     <p class="note" id="agingnote"></p>
   </section>
 
-  <section class="panel">
-    <div class="ph"><h2 class="caps" id="chgtitle">Chuyển biến so với phiên trước</h2></div>
+  <section class="glass-panel panel reveal" id="sec-chg">
+    <div class="ph"><h3 class="lbl-caps" id="chgtitle"><span class="material-symbols-outlined">swap_vert</span>CHUYỂN BIẾN SO VỚI PHIÊN TRƯỚC</h3></div>
     <div class="chg" id="chg"></div>
   </section>
 
-  <section class="panel">
-    <div class="ph"><h2 class="caps">Khách hàng — số phiên đỏ: 10 phiên gần nhất so với 10 phiên trước</h2></div>
-    <div class="tbl"><table style="min-width:640px">
+  <section class="glass-panel panel reveal" id="sec-cust">
+    <div class="ph"><h3 class="lbl-caps"><span class="material-symbols-outlined">groups</span>KHÁCH HÀNG — PHIÊN ĐỎ: 10 PHIÊN GẦN NHẤT SO VỚI 10 PHIÊN TRƯỚC</h3></div>
+    <div class="tbl custom-scrollbar"><table style="min-width:640px">
       <thead><tr><th>Khách hàng</th><th>Phiên đỏ (10 phiên gần nhất)</th><th class="num">10 phiên trước</th><th class="num">Xu hướng</th><th>Hôm nay</th></tr></thead>
       <tbody id="cust"></tbody>
     </table></div>
   </section>
-</div>
+</main>
 
 <script src="trends.js"></script>
 <script>
@@ -146,45 +429,101 @@
   const CLR={R:'#EF4444',A:'#F59E0B',G:'#43B649'};
   const LBL={R:'ĐỎ',A:'VÀNG',G:'XANH'};
   const ESC_RED=3, ESC_TOTAL=10;   // ngưỡng gắn cờ LEO THANG
+  const STRIP_N=30;
+  const REDUCE=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
   const $=id=>document.getElementById(id);
   const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const plain=s=>{const d=document.createElement('div');d.innerHTML=String(s||'');return d.textContent;};
+  const plain=s=>T.plainText(s);
   const fd=d=>d.slice(8,10)+'/'+d.slice(5,7);
   const fdy=d=>fd(d)+'/'+d.slice(0,4);
   const chip=r=>r?`<span class="chip" style="color:${CLR[r]};border-color:${CLR[r]}66;background:${CLR[r]}1a">${LBL[r]}</span>`:'<span class="chip muted" style="border-color:var(--line)">—</span>';
   const keyParts=k=>k.split(' ‖ ');
 
-  let HIST=null,SERIES=[],DAYS=[],AGING=[],RANGE=40,FILTER='RA';
+  let HIST=null,SERIES=[],DAYS=[],AGING=[],RANGE=40,FILTER='RA',Q='',OPEN=new Set(),LAST='';
+
+  /* ---- đồng hồ ---- */
+  (function(){const el=$('clock');const tick=()=>{const t=new Date();
+    el.textContent=t.toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric'})+' | '+t.toLocaleTimeString('vi-VN',{hour12:false});};
+    tick();setInterval(tick,1000);})();
+
+  /* ---- thanh chọn ngày (reports.json) ---- */
+  fetch('reports.json',{cache:'no-store'}).then(r=>r.json()).then(days=>{
+    const nav=$('datenav');
+    days.forEach(d=>{const a=document.createElement('a');a.className='dt';a.href=d+'.html';a.textContent=fd(d);nav.appendChild(a);});
+  }).catch(e=>console.warn('reports.json?',e));
 
   fetch('history.json',{cache:'no-store'}).then(r=>r.json()).then(H=>{
     HIST=H;SERIES=T.ragSeries(H);DAYS=T.byDay(H);AGING=T.aging(DAYS);
     if(!SERIES.length)throw new Error('empty');
-    const last=SERIES[SERIES.length-1].date;
-    $('span').textContent=SERIES.length+' PHIÊN · '+fdy(SERIES[0].date)+' → '+fdy(last);
-    $('latest').href=last+'.html';
-    kpis();chart();aging();changes();customers();
-  }).catch(e=>{console.warn('history.json?',e);$('err').style.display='block';$('span').textContent='—';});
-
-  function kpis(){
-    const n=SERIES.length,cur=SERIES[n-1],prev=SERIES[n-2]||{R:0,A:0,G:0};
-    const dR=cur.R-prev.R;
-    const longRed=AGING.filter(a=>a.redStreak>=ESC_RED).length;
-    const flagged=AGING.filter(isEsc).length;
-    const oldest=AGING.slice().sort((a,b)=>b.openStreak-a.openStreak)[0];
-    const c=T.changes(DAYS);
-    const tile=(l,v,d,c)=>`<div class="kpi" style="border-left-color:${c}"><div class="l caps">${l}</div><div class="v mono">${v}</div><div class="d">${d}</div></div>`;
-    $('kpis').innerHTML=
-      tile('Hồ sơ đỏ hôm nay',cur.R,(dR>0?'▲ +'+dR:dR<0?'▼ '+dR:'= ')+' so với phiên '+fd(prev.date||cur.date),CLR.R)+
-      tile('Cần leo thang',flagged,longRed+' hồ sơ đỏ ≥'+ESC_RED+' phiên liên tiếp',CLR.R)+
-      tile('Mở lâu nhất',oldest?oldest.openStreak+' phiên':'—',oldest?esc(keyParts(oldest.key).join(' · '))+' · từ '+fd(oldest.since):'',CLR.A)+
-      tile('Chuyển biến hôm nay',`<span style="color:${CLR.R}">${c.worse.length}</span> / <span style="color:${CLR.G}">${c.better.length}</span>`,'xấu đi / cải thiện · '+c.added.length+' hồ sơ mới vào báo cáo',CLR.G);
-  }
+    LAST=SERIES[SERIES.length-1].date;
+    $('c-n').textContent=SERIES.length+' PHIÊN';
+    $('c-span').textContent=fdy(SERIES[0].date)+' → '+fdy(LAST);
+    document.querySelectorAll('.js-latest').forEach(a=>a.href=LAST+'.html');
+    kpis();ticker();chart(true);aging();changes();customers();reveal();
+  }).catch(e=>{console.warn('history.json?',e);$('err').style.display='block';});
 
   function isEsc(a){return a.rag==='R'&&(a.redStreak>=ESC_RED||a.redTotal>=ESC_TOTAL);}
 
-  function chart(){
+  /* ---- KPI: đếm số chạy + sparkline 20 phiên ---- */
+  function spark(vals,clr){
+    const w=200,h=34,max=Math.max(1,...vals),n=vals.length;
+    const pts=vals.map((v,i)=>[(i/(n-1||1))*w,h-3-(v/max)*(h-6)]);
+    const d=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+    const last=pts[pts.length-1];
+    return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true">
+      <path class="spark-area" d="${d} L${w} ${h} L0 ${h} Z" fill="${clr}"/>
+      <path class="spark" d="${d}" stroke="${clr}" vector-effect="non-scaling-stroke"/>
+      <circle cx="${last[0]}" cy="${last[1]}" r="3" fill="${clr}" style="filter:drop-shadow(0 0 4px ${clr})"/></svg>`;
+  }
+  function countUp(el){
+    const to=+el.dataset.to;if(REDUCE||!to){el.textContent=to;return;}
+    const t0=performance.now(),dur=900;
+    (function f(t){const p=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-p,3);el.textContent=Math.round(to*e);if(p<1)requestAnimationFrame(f);})(t0);
+  }
+  function kpis(){
+    const n=SERIES.length,cur=SERIES[n-1],prev=SERIES[n-2]||{R:0,A:0,G:0};
+    const dR=cur.R-prev.R;
+    const flagged=AGING.filter(isEsc);
+    const longRed=AGING.filter(a=>a.redStreak>=ESC_RED).length;
+    const oldest=AGING.slice().sort((a,b)=>b.openStreak-a.openStreak)[0];
+    const c=T.changes(DAYS);
+    const last20=SERIES.slice(-20);
+    const openSeries=last20.map(s=>s.R+s.A);
+    const tile=(icon,l,v,d,clr,svg,alert)=>`<div class="kpi glass-panel${alert?' alert':''}" style="border-left-color:${clr}">
+      <div class="scan-line"></div>
+      <div class="l lbl-caps"><span class="material-symbols-outlined" style="color:${clr}">${icon}</span>${l}</div>
+      <div class="v">${v}</div><div class="d">${d}</div>${svg||''}</div>`;
+    $('kpis').innerHTML=
+      tile('warning','Hồ sơ đỏ hôm nay',`<span class="cu" data-to="${cur.R}">0</span>`,
+        `<span style="color:${dR>0?CLR.R:dR<0?CLR.G:'inherit'}">${dR>0?'▲ +'+dR:dR<0?'▼ '+dR:'='}</span> so với phiên ${fd(prev.date||cur.date)}`,CLR.R,spark(last20.map(s=>s.R),CLR.R),cur.R>prev.R)+
+      tile('campaign','Cần leo thang',`<span class="cu" data-to="${flagged.length}">0</span>`,
+        `${longRed} hồ sơ đỏ ≥${ESC_RED} phiên liên tiếp`,CLR.R,'',flagged.length>0)+
+      tile('hourglass_top','Mở lâu nhất',oldest?`<span class="cu" data-to="${oldest.openStreak}">0</span><small style="font-size:14px;color:var(--muted)"> phiên</small>`:'—',
+        oldest?esc(keyParts(oldest.key).join(' · '))+' · từ '+fd(oldest.since):'',CLR.A,spark(openSeries,CLR.A))+
+      tile('swap_vert','Chuyển biến hôm nay',`<span style="color:${CLR.R}" class="cu" data-to="${c.worse.length}">0</span><span style="color:var(--muted)"> / </span><span style="color:${CLR.G}" class="cu" data-to="${c.better.length}">0</span>`,
+        `xấu đi / cải thiện · ${c.added.length} hồ sơ mới vào báo cáo`,CLR.G,spark(last20.map(s=>s.G),CLR.G));
+    document.querySelectorAll('.cu').forEach(countUp);
+  }
+
+  /* ---- băng tin chạy: leo thang + chuyển biến hôm nay ---- */
+  function ticker(){
+    const c=T.changes(DAYS),items=[];
+    const nm=x=>`<b>${esc(keyParts(x.key)[0])} ${esc(T.ctrCode(x.item.ctr))}</b>`;
+    AGING.filter(isEsc).forEach(a=>items.push(`<span style="color:${CLR.R}">⚠ LEO THANG</span> ${nm(a)} · đỏ ${a.redStreak} phiên liên tiếp, ${a.redTotal} phiên trong lịch sử`));
+    c.worse.forEach(x=>items.push(`<span style="color:${CLR.R}">▲ XẤU ĐI</span> ${nm(x)} · ${LBL[x.from]} → ${LBL[x.to]} · ${esc(plain(x.item.title))}`));
+    c.better.forEach(x=>items.push(`<span style="color:${CLR.G}">▼ CẢI THIỆN</span> ${nm(x)} · ${LBL[x.from]} → ${LBL[x.to]}`));
+    c.added.filter(x=>x.to==='R').forEach(x=>items.push(`<span style="color:var(--primary)">✚ MỚI · ĐỎ</span> ${nm(x)} · ${esc(plain(x.item.title))}`));
+    if(!items.length)return;
+    const html=items.map(s=>`<span>${s}</span>`).join('');
+    const run=$('tickrun');run.innerHTML=html+html;   // nhân đôi để chạy vòng liền mạch
+    run.style.setProperty('--dur',Math.max(30,items.length*9)+'s');
+    $('ticker').hidden=false;
+  }
+
+  /* ---- biểu đồ RAG ---- */
+  function chart(animate){
     const data=RANGE?SERIES.slice(-RANGE):SERIES;
-    const svg=$('svg'),W=svg.clientWidth||900,H=240,pl=30,pr=8,pt=10,pb=26;
+    const svg=$('svg'),W=svg.clientWidth||900,H=260,pl=30,pr=8,pt=10,pb=26;
     const max=Math.max(1,...data.map(d=>d.R+d.A+d.G));
     const step=Math.ceil(max/4/5)*5||5,top=step*Math.ceil(max/step);
     const iw=W-pl-pr,ih=H-pt-pb,bw=iw/data.length,gap=Math.min(4,bw*.25),w=Math.max(1,bw-gap);
@@ -194,56 +533,77 @@
     const every=Math.ceil(data.length/12);
     data.forEach((d,i)=>{
       const x=pl+i*bw+gap/2;let base=0,segs='';
-      ['G','A','R'].forEach((k,j)=>{if(!d[k])return;const y0=y(base),y1=y(base+d[k]);
+      ['G','A','R'].forEach(k=>{if(!d[k])return;const y0=y(base),y1=y(base+d[k]);
         const hgt=Math.max(0,y0-y1-(base?2:0));
         const isTop=(k==='R')||(k==='A'&&!d.R)||(k==='G'&&!d.R&&!d.A);
         segs+=`<rect x="${x}" y="${y1}" width="${w}" height="${hgt}" fill="${CLR[k]}" rx="${isTop?Math.min(3,w/2):0}"/>`;base+=d[k];});
-      g+=`<g class="bar" data-i="${i}">${segs}<rect x="${pl+i*bw}" y="${pt}" width="${bw}" height="${ih}" fill="transparent"/></g>`;
+      const anim=animate&&!REDUCE?` class="grow" style="animation-delay:${Math.round(i*(500/data.length))}ms"`:'';
+      g+=`<g class="bar" data-i="${i}"><g${anim}>${segs}</g><rect x="${pl+i*bw}" y="${pt}" width="${bw}" height="${ih}" fill="transparent"/></g>`;
       if(i%every===0||i===data.length-1)g+=`<text x="${x+w/2}" y="${H-8}" fill="#9aa595" font-size="10" text-anchor="middle" font-family="JetBrains Mono">${fd(d.date)}</text>`;
     });
+    g+=`<line class="xhair" id="xh" x1="0" x2="0" y1="${pt}" y2="${pt+ih}"/>`;
     svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.innerHTML=g;
-    const tip=$('tip');
+    const tip=$('tip'),xh=svg.querySelector('#xh');
     svg.querySelectorAll('.bar').forEach(b=>{
-      const d=data[+b.dataset.i];
+      const i=+b.dataset.i,d=data[i],prev=data[i-1];
+      b.addEventListener('mouseenter',()=>{svg.classList.add('hovering');b.classList.add('hot');
+        const cx=pl+i*bw+bw/2;xh.setAttribute('x1',cx);xh.setAttribute('x2',cx);});
       b.addEventListener('mousemove',e=>{
         const r=$('chart').getBoundingClientRect();
-        tip.innerHTML=`<div class="mono" style="margin-bottom:4px"><b>${fdy(d.date)}</b> · ${d.R+d.A+d.G} hồ sơ</div>`+
-          ['R','A','G'].map(k=>`<div><i style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${CLR[k]};margin-right:6px"></i>${LBL[k]}: <b class="mono">${d[k]}</b></div>`).join('');
+        const dl=k=>{if(!prev)return'';const v=d[k]-prev[k];return v?` <span style="color:${(k==='G')===(v>0)?CLR.G:CLR.R}">${v>0?'+':''}${v}</span>`:'';};
+        tip.innerHTML=`<div class="mono" style="margin-bottom:5px"><b>${fdy(d.date)}</b> · ${d.R+d.A+d.G} hồ sơ</div>`+
+          ['R','A','G'].map(k=>`<div><i style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${CLR[k]};margin-right:6px"></i>${LBL[k]}: <b class="mono">${d[k]}</b>${dl(k)}</div>`).join('')+
+          `<div class="muted" style="margin-top:5px;font-size:10px">Bấm để mở báo cáo ngày</div>`;
         tip.style.display='block';
-        let lx=e.clientX-r.left+12;if(lx+tip.offsetWidth>r.width)lx=e.clientX-r.left-tip.offsetWidth-12;
-        tip.style.left=lx+'px';tip.style.top=Math.max(0,e.clientY-r.top-20)+'px';});
-      b.addEventListener('mouseleave',()=>tip.style.display='none');
+        let lx=e.clientX-r.left+14;if(lx+tip.offsetWidth>r.width)lx=e.clientX-r.left-tip.offsetWidth-14;
+        tip.style.left=lx+'px';tip.style.top=Math.max(0,e.clientY-r.top-24)+'px';});
+      b.addEventListener('mouseleave',()=>{tip.style.display='none';b.classList.remove('hot');svg.classList.remove('hovering');});
       b.addEventListener('click',()=>location.href=d.date+'.html');
     });
   }
 
+  /* ---- bảng tồn đọng: dải RAG, lọc, mở rộng chi tiết ---- */
+  function stripHtml(key){
+    return '<div class="strip">'+T.strip(DAYS,key,STRIP_N).map(s=>
+      `<a class="${s.rag||'x'}" href="${s.date}.html" title="${fdy(s.date)} · ${s.rag?LBL[s.rag]:'không có trong báo cáo'}" onclick="event.stopPropagation()"></a>`).join('')+'</div>';
+  }
   function aging(){
-    const rows=AGING.filter(a=>FILTER==='ALL'||FILTER.includes(a.rag));
+    const q=Q.toLowerCase();
+    const rows=AGING.filter(a=>(FILTER==='ALL'||FILTER.includes(a.rag))&&
+      (!q||(a.key+' '+a.item.ctr+' '+plain(a.item.title)+' '+plain(a.item.owner)+' '+plain(a.item.next)).toLowerCase().includes(q)));
     $('aging').innerHTML=rows.map(a=>{
-      const [c,code]=keyParts(a.key),it=a.item;
-      return `<tr>
-        <td><div class="cust">${esc(c)}</div><div class="code">${esc(it.ctr||code)}</div><div class="ttl">${esc(plain(it.title))}</div>${isEsc(a)?'<span class="esc">LEO THANG</span>':''}</td>
+      const [c,code]=keyParts(a.key),it=a.item,open=OPEN.has(a.key),e=isEsc(a);
+      const facts=(it.facts||[]).map(f=>`<li>${esc(plain(f))}</li>`).join('');
+      return `<tr class="row${e?' esc':''}${open?' open':''}" data-k="${esc(a.key)}">
+        <td><div class="cust"><span class="caret">▶</span>${esc(c)}</div><div class="code">${esc(it.ctr||code)}</div><div>${esc(plain(it.title))}</div>${e?'<span class="esc-tag"><i></i>LEO THANG</span>':''}</td>
         <td>${chip(a.rag)}</td>
+        <td>${stripHtml(a.key)}</td>
         <td class="num" style="color:${a.redStreak>=ESC_RED?CLR.R:'inherit'}">${a.redStreak||'—'}</td>
         <td class="num">${a.redTotal||'—'}</td>
         <td class="num">${a.openStreak}<div class="muted" style="font-size:10px">từ ${fd(a.since)}</div></td>
         <td>${esc(plain(it.owner))||'—'}</td>
         <td class="mono" style="font-size:11px">${esc(plain(it.dl))||'—'}</td>
         <td style="min-width:240px">${esc(plain(it.next))||'—'}</td>
-      </tr>`;}).join('')||'<tr><td colspan="8" class="muted">Không có hồ sơ.</td></tr>';
-    $('agingnote').textContent=`Cờ LEO THANG: hồ sơ đang Đỏ và đã Đỏ ≥${ESC_RED} phiên liên tiếp hoặc ≥${ESC_TOTAL} phiên trong lịch sử. `+
+      </tr>`+(open?`<tr class="detail"><td colspan="9"><div class="in">
+        ${facts?`<ul>${facts}</ul>`:''}
+        <a class="btn lbl-caps" href="${LAST}.html" style="padding:6px 10px"><span class="material-symbols-outlined">open_in_new</span>MỞ BÁO CÁO ${fdy(LAST)}</a>
+        <span class="muted" style="font-size:11px;margin-left:10px">Xuất hiện lần đầu trong chuỗi hiện tại: ${fdy(a.since)}</span>
+      </div></td></tr>`:'');}).join('')||'<tr><td colspan="9" class="muted">Không có hồ sơ khớp bộ lọc.</td></tr>';
+    $('aging').querySelectorAll('tr.row').forEach(tr=>tr.addEventListener('click',()=>{
+      const k=tr.dataset.k;OPEN.has(k)?OPEN.delete(k):OPEN.add(k);aging();}));
+    $('agingnote').textContent=`Bấm vào một dòng để xem diễn biến chi tiết. Cờ LEO THANG: hồ sơ đang Đỏ và đã Đỏ ≥${ESC_RED} phiên liên tiếp hoặc ≥${ESC_TOTAL} phiên trong lịch sử. `+
       `Hồ sơ được nhận diện theo khách hàng + mã HĐ (lấy dãy số ≥6 chữ số làm lõi); chuỗi phiên chấp nhận vắng tối đa ${T.GAP} phiên liên tiếp.`;
   }
 
   function changes(){
     const c=T.changes(DAYS),n=DAYS.length;
-    if(n>=2)$('chgtitle').textContent=`Chuyển biến: ${fdy(DAYS[n-2].date)} → ${fdy(DAYS[n-1].date)}`;
-    const li=x=>{const [cu]=keyParts(x.key),it=x.item;
-      return `<li>${x.from?chip(x.from)+' → ':''}${x.to?chip(x.to):'<span class="muted mono" style="font-size:9px">RỜI BÁO CÁO</span>'}
-        <div style="margin-top:4px"><b>${esc(cu)}</b> <span class="code">${esc(T.ctrCode(it.ctr))}</span>${x.seenBefore?' <span class="muted" style="font-size:10px">(quay lại)</span>':''}</div>
+    if(n>=2)$('chgtitle').innerHTML=`<span class="material-symbols-outlined">swap_vert</span>CHUYỂN BIẾN: ${fdy(DAYS[n-2].date)} → ${fdy(DAYS[n-1].date)}`;
+    const li=x=>{const [cu]=keyParts(x.key),it=x.item,clr=CLR[x.to||x.from]||'var(--line)';
+      return `<li style="border-left-color:${clr}">${x.from?chip(x.from)+' → ':''}${x.to?chip(x.to):'<span class="muted mono" style="font-size:9px">RỜI BÁO CÁO</span>'}
+        <div style="margin-top:5px"><b>${esc(cu)}</b> <span class="code">${esc(T.ctrCode(it.ctr))}</span>${x.seenBefore?' <span class="muted" style="font-size:10px">(quay lại)</span>':''}</div>
         <div class="muted">${esc(plain(it.title))}</div></li>`;};
-    const col=(t,clr,l)=>`<div><h3 class="caps" style="color:${clr}">${t} · ${l.length}</h3>${l.length?'<ul>'+l.map(li).join('')+'</ul>':'<div class="empty">Không có.</div>'}</div>`;
-    $('chg').innerHTML=col('Xấu đi',CLR.R,c.worse)+col('Cải thiện',CLR.G,c.better)+col('Mới vào báo cáo','var(--primary)',c.added)+col('Rời báo cáo','var(--muted)',c.dropped);
+    const col=(icon,t,clr,l)=>`<div class="col custom-scrollbar"><h4 class="lbl-caps" style="color:${clr}"><span>${t}</span><span>${l.length}</span></h4>${l.length?'<ul class="custom-scrollbar">'+l.map(li).join('')+'</ul>':'<div class="empty">Không có.</div>'}</div>`;
+    $('chg').innerHTML=col('','▲ Xấu đi',CLR.R,c.worse)+col('','▼ Cải thiện',CLR.G,c.better)+col('','✚ Mới vào báo cáo','var(--primary)',c.added)+col('','⨯ Rời báo cáo','var(--muted)',c.dropped);
   }
 
   function customers(){
@@ -252,17 +612,27 @@
       const d=r.recent-r.before;
       const trend=d>0?`<span class="up">▲ +${d}</span>`:d<0?`<span class="down">▼ ${d}</span>`:'<span class="muted">=</span>';
       const now=['R','A','G'].filter(k=>r.now[k]).map(k=>`<span class="chip" style="color:${CLR[k]};border-color:${CLR[k]}66;background:${CLR[k]}1a">${r.now[k]} ${LBL[k]}</span>`).join(' ')||'<span class="muted">không có trong báo cáo</span>';
-      return `<tr><td class="cust">${esc(r.cust)}</td>
-        <td><div class="cbar"><div class="track"><div class="fill" style="width:${r.recent/max*100}%"></div></div><span class="mono">${r.recent}</span></div></td>
+      return `<tr class="crow"><td class="cust">${esc(r.cust)}</td>
+        <td><div class="cbar"><div class="track"><div class="fill" data-w="${r.recent/max*100}"></div></div><span class="mono">${r.recent}</span></div></td>
         <td class="num">${r.before}</td><td class="num mono">${trend}</td><td>${now}</td></tr>`;}).join('');
   }
 
-  // Tải CSV ngay trên trình duyệt (BOM UTF-8 để Excel hiển thị đúng tiếng Việt).
+  /* ---- hiện dần khi cuộn tới; thanh khách hàng chạy khi vào khung nhìn ---- */
+  function reveal(){
+    const fill=()=>document.querySelectorAll('#cust .fill').forEach(f=>f.style.width=f.dataset.w+'%');
+    const els=document.querySelectorAll('.reveal');
+    if(REDUCE||!('IntersectionObserver' in window)){els.forEach(e=>e.classList.add('in'));fill();return;}
+    const io=new IntersectionObserver(es=>es.forEach(en=>{if(!en.isIntersecting)return;
+      en.target.classList.add('in');if(en.target.id==='sec-cust')setTimeout(fill,250);io.unobserve(en.target);}),{threshold:.08});
+    els.forEach(e=>io.observe(e));
+  }
+
+  /* ---- tải CSV (BOM UTF-8 để Excel hiển thị đúng tiếng Việt) ---- */
   document.querySelectorAll('.dl').forEach(b=>b.addEventListener('click',()=>{
     if(!HIST)return;
     const dates=Object.keys(HIST).sort(),last=dates[dates.length-1];
     const src=b.dataset.scope==='last'?{[last]:HIST[last]}:HIST;
-    const blob=new Blob(['\ufeff'+T.toCSV(T.csvRows(src))],{type:'text/csv;charset=utf-8'});
+    const blob=new Blob(['﻿'+T.toCSV(T.csvRows(src))],{type:'text/csv;charset=utf-8'});
     const a=document.createElement('a');a.href=URL.createObjectURL(blob);
     a.download=b.dataset.scope==='last'?`VHXK_${last}.csv`:`VHXK_lich-su_${dates[0]}_${last}.csv`;
     document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},0);
@@ -270,10 +640,44 @@
 
   function seg(id,attr,set){$(id).querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
     $(id).querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));set(b.dataset[attr]);}));}
-  seg('range','n',v=>{RANGE=+v;chart();});
+  seg('range','n',v=>{RANGE=+v;chart(true);});
   seg('ragf','f',v=>{FILTER=v;aging();});
-  let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>SERIES.length&&chart(),150);});
+  $('q').addEventListener('input',e=>{Q=e.target.value.trim();aging();});
+  // phím "/" để nhảy vào ô lọc, Esc để xoá
+  addEventListener('keydown',e=>{
+    if(e.key==='/'&&document.activeElement!==$('q')){e.preventDefault();$('q').focus();$('sec-aging').scrollIntoView({block:'start'});}
+    else if(e.key==='Escape'&&document.activeElement===$('q')){$('q').value='';Q='';aging();$('q').blur();}
+  });
+  let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>SERIES.length&&chart(false),150);});
+})();
+
+/* ---- nền shader WebGL (giống báo cáo ngày) ---- */
+(function(){
+  const c=document.getElementById('bg-shader');const gl=c.getContext('webgl')||c.getContext('experimental-webgl');if(!gl)return;
+  function size(){c.width=window.innerWidth;c.height=window.innerHeight;}window.addEventListener('resize',size);size();
+  const vs=`attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}`;
+  const fs=`precision highp float;uniform float t;uniform vec2 r;
+  void main(){vec2 uv=gl_FragCoord.xy/r.xy;uv=uv*2.-1.;uv.x*=r.x/r.y;
+  float pulse=sin(t*.5)*.5+.5;vec2 g=fract(uv*10.+t*.1);
+  float grid=smoothstep(.02,0.,abs(g.x-.5))+smoothstep(.02,0.,abs(g.y-.5));
+  float lines=0.;for(float i=0.;i<5.;i++){float sp=.5+i*.2;lines+=.002/abs(uv.y+sin(uv.x*2.+t*sp+i*1.5)*.5);}
+  vec3 base=vec3(.04,.06,.04);vec3 ac=vec3(.26,.71,.29);
+  vec3 col=mix(base,ac*.3,grid*.2);col+=ac*lines*pulse;
+  float n=fract(sin(dot(uv,vec2(12.9898,78.233)))*43758.5453);col+=n*.02;
+  gl_FragColor=vec4(col,1.);}`;
+  function sh(ty,s){const o=gl.createShader(ty);gl.shaderSource(o,s);gl.compileShader(o);return o;}
+  const pr=gl.createProgram();gl.attachShader(pr,sh(gl.VERTEX_SHADER,vs));gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,fs));gl.linkProgram(pr);gl.useProgram(pr);
+  const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+  const lp=gl.getAttribLocation(pr,'p');gl.enableVertexAttribArray(lp);gl.vertexAttribPointer(lp,2,gl.FLOAT,false,0,0);
+  const ut=gl.getUniformLocation(pr,'t'),ur=gl.getUniformLocation(pr,'r');
+  const reduce=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  function draw(ms){gl.viewport(0,0,c.width,c.height);gl.uniform1f(ut,reduce?0:ms*.001);gl.uniform2f(ur,c.width,c.height);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);if(!reduce)requestAnimationFrame(draw);}
+  if(reduce){draw(0);}else requestAnimationFrame(draw);
 })();
 </script>
+<script>/* Ẩn tên icon dạng chữ ("warning", "download"…) cho tới khi font Material Symbols tải xong */
+(function(){var d=document.documentElement;d.classList.add('no-msym');
+  if(!(document.fonts&&document.fonts.load))return;
+  document.fonts.load('24px "Material Symbols Outlined"','warning').then(function(f){if(f&&f.length)d.classList.remove('no-msym');}).catch(function(){});})();</script>
 </body>
 </html>

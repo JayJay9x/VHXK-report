@@ -109,6 +109,11 @@
       .sort((a, b) => (b.recent - a.recent) || (b.now.R - a.now.R) || (b.now.A - a.now.A));
   }
 
+  // Dải RAG của 1 hồ sơ qua n phiên gần nhất: [{date, rag|null}] (null = không có trong báo cáo).
+  function strip(days, key, n) {
+    return days.slice(-n).map(d => { const x = d.items.get(key); return { date: d.date, rag: x ? x.rag : null }; });
+  }
+
   // ---- Xuất CSV: 1 dòng = 1 mục trong 1 báo cáo ngày, ngày mới nhất ở trên ----
   const STAGES = ['Booking', 'Sản xuất', 'Đóng hàng', 'Chứng từ', 'Thanh toán'];
   const RAG_NAME = { R: 'Đỏ', A: 'Vàng', G: 'Xanh' };
@@ -149,7 +154,7 @@
     return [CSV_COLS.join(',')].concat(rows.map(r => CSV_COLS.map(c => csvCell(r[c])).join(','))).join('\r\n') + '\r\n';
   }
 
-  const api = { CSV_COLS, plainText, csvRows, toCSV, GAP, ctrCode, normCust, itemKey, byDay, ragSeries, aging, changes, customers };
+  const api = { strip, CSV_COLS, plainText, csvRows, toCSV, GAP, ctrCode, normCust, itemKey, byDay, ragSeries, aging, changes, customers };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Trends = api;
 })(this);
