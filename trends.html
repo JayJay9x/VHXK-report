@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html class="dark" lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Xu hướng &amp; Tồn đọng — VHXK AAN</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<style>
+  :root{
+    --bg:#0a100a;--panel:rgba(18,28,18,.82);--line:rgba(108,222,107,.18);
+    --ink:#dee4da;--muted:#9aa595;--primary:#6cde6b;--brand:#43b649;
+    --R:#EF4444;--A:#F59E0B;--G:#43B649;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;font-size:14px}
+  body{background:radial-gradient(1200px 600px at 20% -10%,rgba(67,182,73,.10),transparent 60%),var(--bg);min-height:100vh}
+  a{color:var(--primary)}
+  .mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+  .caps{text-transform:uppercase;letter-spacing:.12em;font-weight:700}
+  .wrap{max-width:1280px;margin:0 auto;padding:20px 16px 48px}
+  header{display:flex;flex-wrap:wrap;align-items:center;gap:14px;justify-content:space-between;
+    border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:18px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand img{height:38px;width:auto}
+  h1{margin:0;font-size:18px;font-weight:900;letter-spacing:.06em}
+  .sub{font-size:11px;color:var(--muted)}
+  .back{font-size:11px;padding:8px 12px;border:1px solid var(--line);text-decoration:none;border-radius:2px}
+  .back:hover{background:rgba(108,222,107,.08)}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:16px;margin-bottom:16px}
+  .ph{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+  .ph h2{margin:0;font-size:12px;color:var(--primary)}
+  .note{font-size:11px;color:var(--muted);margin:6px 0 0}
+  .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--line);border-radius:4px;padding:14px}
+  .kpi .l{font-size:10px;color:var(--muted)}
+  .kpi .v{font-size:30px;font-weight:900;margin:4px 0 2px}
+  .kpi .d{font-size:11px;color:var(--muted)}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:2px;overflow:hidden}
+  .seg button{background:transparent;color:var(--muted);border:0;padding:6px 10px;font:700 10px/1 'JetBrains Mono',monospace;cursor:pointer}
+  .seg button+button{border-left:1px solid var(--line)}
+  .seg button.on{background:rgba(108,222,107,.14);color:var(--primary)}
+  .legend{display:flex;gap:14px;font-size:11px;color:var(--muted)}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+  #chart{position:relative}
+  #chart svg{display:block;width:100%;height:240px}
+  #chart .bar{cursor:pointer}
+  #tip{position:absolute;pointer-events:none;background:#0f170f;border:1px solid var(--line);border-radius:4px;
+    padding:8px 10px;font-size:11px;white-space:nowrap;display:none;z-index:2}
+  .tbl{width:100%;overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:12px;min-width:900px}
+  th{text-align:left;font-size:10px;color:var(--muted);padding:8px;border-bottom:1px solid var(--line);white-space:nowrap}
+  td{padding:9px 8px;border-bottom:1px solid rgba(108,222,107,.07);vertical-align:top}
+  td.num{text-align:right;font-family:'JetBrains Mono',monospace;white-space:nowrap}
+  th.num{text-align:right}
+  .chip{display:inline-block;font:700 9px/1 'JetBrains Mono',monospace;padding:4px 6px;border:1px solid;border-radius:2px;white-space:nowrap}
+  .esc{display:inline-block;margin-top:4px;font:700 9px/1 'JetBrains Mono',monospace;padding:3px 5px;background:var(--R);color:#fff;border-radius:2px}
+  .cust{font-weight:700}
+  .code{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--primary)}
+  .ttl{color:var(--ink)}
+  .muted{color:var(--muted)}
+  .chg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+  .chg h3{margin:0 0 8px;font-size:10px}
+  .chg ul{list-style:none;margin:0;padding:0}
+  .chg li{font-size:11.5px;padding:6px 0;border-bottom:1px solid rgba(108,222,107,.07)}
+  .chg .empty{color:var(--muted);font-size:11px}
+  .cbar{display:flex;align-items:center;gap:8px}
+  .cbar .track{flex:1;height:8px;background:rgba(255,255,255,.04);border-radius:2px;overflow:hidden;min-width:60px}
+  .cbar .fill{height:100%;background:var(--R);border-radius:0 2px 2px 0}
+  .up{color:var(--R)} .down{color:var(--G)}
+  #err{display:none;color:var(--A);font-size:12px}
+  @media (max-width:900px){.kpis,.chg{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media (max-width:520px){.kpis,.chg{grid-template-columns:1fr}.kpi .v{font-size:26px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <img src="logo.png" alt="AAN"/>
+      <div>
+        <h1>XU HƯỚNG &amp; TỒN ĐỌNG</h1>
+        <div class="sub mono" id="span">Đang tải history.json…</div>
+      </div>
+    </div>
+    <a class="back caps mono" id="latest" href="index.html">← Báo cáo mới nhất</a>
+  </header>
+
+  <p id="err" class="mono">// KHÔNG TẢI ĐƯỢC history.json — mở trang qua GitHub Pages hoặc máy chủ web, không mở bằng file:// //</p>
+
+  <section class="kpis" id="kpis"></section>
+
+  <section class="panel">
+    <div class="ph">
+      <h2 class="caps">Số hồ sơ theo mức RAG mỗi phiên báo cáo</h2>
+      <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+        <div class="legend"><span><i style="background:var(--R)"></i>Đỏ · Critical</span><span><i style="background:var(--A)"></i>Vàng · Monitoring</span><span><i style="background:var(--G)"></i>Xanh · On-track</span></div>
+        <div class="seg" id="range"><button data-n="20">20 PHIÊN</button><button data-n="40" class="on">40 PHIÊN</button><button data-n="0">TẤT CẢ</button></div>
+      </div>
+    </div>
+    <div id="chart"><svg id="svg" role="img" aria-label="Biểu đồ cột chồng số hồ sơ Đỏ, Vàng, Xanh theo ngày"></svg><div id="tip"></div></div>
+    <p class="note">Bấm vào một cột để mở báo cáo ngày đó.</p>
+  </section>
+
+  <section class="panel">
+    <div class="ph">
+      <h2 class="caps">Hồ sơ đang mở — xếp theo mức tồn đọng</h2>
+      <div class="seg" id="ragf"><button data-f="R">CHỈ ĐỎ</button><button data-f="RA" class="on">ĐỎ + VÀNG</button><button data-f="ALL">TẤT CẢ</button></div>
+    </div>
+    <div class="tbl"><table>
+      <thead><tr>
+        <th>Khách hàng · Hồ sơ</th><th>Hiện tại</th>
+        <th class="num" title="Số phiên báo cáo liên tiếp gần nhất đang ở mức Đỏ">Đỏ liên tiếp</th>
+        <th class="num" title="Tổng số phiên hồ sơ bị Đỏ trong toàn bộ lịch sử">Tổng phiên đỏ</th>
+        <th class="num" title="Số phiên hồ sơ có mặt liên tục trong báo cáo">Đã mở</th>
+        <th>Phụ trách</th><th>Deadline</th><th>Việc tiếp theo</th>
+      </tr></thead>
+      <tbody id="aging"></tbody>
+    </table></div>
+    <p class="note" id="agingnote"></p>
+  </section>
+
+  <section class="panel">
+    <div class="ph"><h2 class="caps" id="chgtitle">Chuyển biến so với phiên trước</h2></div>
+    <div class="chg" id="chg"></div>
+  </section>
+
+  <section class="panel">
+    <div class="ph"><h2 class="caps">Khách hàng — số phiên đỏ: 10 phiên gần nhất so với 10 phiên trước</h2></div>
+    <div class="tbl"><table style="min-width:640px">
+      <thead><tr><th>Khách hàng</th><th>Phiên đỏ (10 phiên gần nhất)</th><th class="num">10 phiên trước</th><th class="num">Xu hướng</th><th>Hôm nay</th></tr></thead>
+      <tbody id="cust"></tbody>
+    </table></div>
+  </section>
+</div>
+
+<script src="trends.js"></script>
+<script>
+(function(){
+  const T=window.Trends;
+  const CLR={R:'#EF4444',A:'#F59E0B',G:'#43B649'};
+  const LBL={R:'ĐỎ',A:'VÀNG',G:'XANH'};
+  const ESC_RED=3, ESC_TOTAL=10;   // ngưỡng gắn cờ LEO THANG
+  const $=id=>document.getElementById(id);
+  const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const plain=s=>{const d=document.createElement('div');d.innerHTML=String(s||'');return d.textContent;};
+  const fd=d=>d.slice(8,10)+'/'+d.slice(5,7);
+  const fdy=d=>fd(d)+'/'+d.slice(0,4);
+  const chip=r=>r?`<span class="chip" style="color:${CLR[r]};border-color:${CLR[r]}66;background:${CLR[r]}1a">${LBL[r]}</span>`:'<span class="chip muted" style="border-color:var(--line)">—</span>';
+  const keyParts=k=>k.split(' ‖ ');
+
+  let SERIES=[],DAYS=[],AGING=[],RANGE=40,FILTER='RA';
+
+  fetch('history.json',{cache:'no-store'}).then(r=>r.json()).then(H=>{
+    SERIES=T.ragSeries(H);DAYS=T.byDay(H);AGING=T.aging(DAYS);
+    if(!SERIES.length)throw new Error('empty');
+    const last=SERIES[SERIES.length-1].date;
+    $('span').textContent=SERIES.length+' PHIÊN · '+fdy(SERIES[0].date)+' → '+fdy(last);
+    $('latest').href=last+'.html';
+    kpis();chart();aging();changes();customers();
+  }).catch(e=>{console.warn('history.json?',e);$('err').style.display='block';$('span').textContent='—';});
+
+  function kpis(){
+    const n=SERIES.length,cur=SERIES[n-1],prev=SERIES[n-2]||{R:0,A:0,G:0};
+    const dR=cur.R-prev.R;
+    const longRed=AGING.filter(a=>a.redStreak>=ESC_RED).length;
+    const flagged=AGING.filter(isEsc).length;
+    const oldest=AGING.slice().sort((a,b)=>b.openStreak-a.openStreak)[0];
+    const c=T.changes(DAYS);
+    const tile=(l,v,d,c)=>`<div class="kpi" style="border-left-color:${c}"><div class="l caps">${l}</div><div class="v mono">${v}</div><div class="d">${d}</div></div>`;
+    $('kpis').innerHTML=
+      tile('Hồ sơ đỏ hôm nay',cur.R,(dR>0?'▲ +'+dR:dR<0?'▼ '+dR:'= ')+' so với phiên '+fd(prev.date||cur.date),CLR.R)+
+      tile('Cần leo thang',flagged,longRed+' hồ sơ đỏ ≥'+ESC_RED+' phiên liên tiếp',CLR.R)+
+      tile('Mở lâu nhất',oldest?oldest.openStreak+' phiên':'—',oldest?esc(keyParts(oldest.key).join(' · '))+' · từ '+fd(oldest.since):'',CLR.A)+
+      tile('Chuyển biến hôm nay',`<span style="color:${CLR.R}">${c.worse.length}</span> / <span style="color:${CLR.G}">${c.better.length}</span>`,'xấu đi / cải thiện · '+c.added.length+' hồ sơ mới vào báo cáo',CLR.G);
+  }
+
+  function isEsc(a){return a.rag==='R'&&(a.redStreak>=ESC_RED||a.redTotal>=ESC_TOTAL);}
+
+  function chart(){
+    const data=RANGE?SERIES.slice(-RANGE):SERIES;
+    const svg=$('svg'),W=svg.clientWidth||900,H=240,pl=30,pr=8,pt=10,pb=26;
+    const max=Math.max(1,...data.map(d=>d.R+d.A+d.G));
+    const step=Math.ceil(max/4/5)*5||5,top=step*Math.ceil(max/step);
+    const iw=W-pl-pr,ih=H-pt-pb,bw=iw/data.length,gap=Math.min(4,bw*.25),w=Math.max(1,bw-gap);
+    const y=v=>pt+ih-(v/top)*ih;
+    let g='';
+    for(let v=0;v<=top;v+=step){g+=`<line x1="${pl}" x2="${W-pr}" y1="${y(v)}" y2="${y(v)}" stroke="rgba(222,228,218,.08)"/><text x="${pl-6}" y="${y(v)+3}" fill="#9aa595" font-size="10" text-anchor="end" font-family="JetBrains Mono">${v}</text>`;}
+    const every=Math.ceil(data.length/12);
+    data.forEach((d,i)=>{
+      const x=pl+i*bw+gap/2;let base=0,segs='';
+      ['G','A','R'].forEach((k,j)=>{if(!d[k])return;const y0=y(base),y1=y(base+d[k]);
+        const hgt=Math.max(0,y0-y1-(base?2:0));
+        const isTop=(k==='R')||(k==='A'&&!d.R)||(k==='G'&&!d.R&&!d.A);
+        segs+=`<rect x="${x}" y="${y1}" width="${w}" height="${hgt}" fill="${CLR[k]}" rx="${isTop?Math.min(3,w/2):0}"/>`;base+=d[k];});
+      g+=`<g class="bar" data-i="${i}">${segs}<rect x="${pl+i*bw}" y="${pt}" width="${bw}" height="${ih}" fill="transparent"/></g>`;
+      if(i%every===0||i===data.length-1)g+=`<text x="${x+w/2}" y="${H-8}" fill="#9aa595" font-size="10" text-anchor="middle" font-family="JetBrains Mono">${fd(d.date)}</text>`;
+    });
+    svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.innerHTML=g;
+    const tip=$('tip');
+    svg.querySelectorAll('.bar').forEach(b=>{
+      const d=data[+b.dataset.i];
+      b.addEventListener('mousemove',e=>{
+        const r=$('chart').getBoundingClientRect();
+        tip.innerHTML=`<div class="mono" style="margin-bottom:4px"><b>${fdy(d.date)}</b> · ${d.R+d.A+d.G} hồ sơ</div>`+
+          ['R','A','G'].map(k=>`<div><i style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${CLR[k]};margin-right:6px"></i>${LBL[k]}: <b class="mono">${d[k]}</b></div>`).join('');
+        tip.style.display='block';
+        let lx=e.clientX-r.left+12;if(lx+tip.offsetWidth>r.width)lx=e.clientX-r.left-tip.offsetWidth-12;
+        tip.style.left=lx+'px';tip.style.top=Math.max(0,e.clientY-r.top-20)+'px';});
+      b.addEventListener('mouseleave',()=>tip.style.display='none');
+      b.addEventListener('click',()=>location.href=d.date+'.html');
+    });
+  }
+
+  function aging(){
+    const rows=AGING.filter(a=>FILTER==='ALL'||FILTER.includes(a.rag));
+    $('aging').innerHTML=rows.map(a=>{
+      const [c,code]=keyParts(a.key),it=a.item;
+      return `<tr>
+        <td><div class="cust">${esc(c)}</div><div class="code">${esc(it.ctr||code)}</div><div class="ttl">${esc(plain(it.title))}</div>${isEsc(a)?'<span class="esc">LEO THANG</span>':''}</td>
+        <td>${chip(a.rag)}</td>
+        <td class="num" style="color:${a.redStreak>=ESC_RED?CLR.R:'inherit'}">${a.redStreak||'—'}</td>
+        <td class="num">${a.redTotal||'—'}</td>
+        <td class="num">${a.openStreak}<div class="muted" style="font-size:10px">từ ${fd(a.since)}</div></td>
+        <td>${esc(plain(it.owner))||'—'}</td>
+        <td class="mono" style="font-size:11px">${esc(plain(it.dl))||'—'}</td>
+        <td style="min-width:240px">${esc(plain(it.next))||'—'}</td>
+      </tr>`;}).join('')||'<tr><td colspan="8" class="muted">Không có hồ sơ.</td></tr>';
+    $('agingnote').textContent=`Cờ LEO THANG: hồ sơ đang Đỏ và đã Đỏ ≥${ESC_RED} phiên liên tiếp hoặc ≥${ESC_TOTAL} phiên trong lịch sử. `+
+      `Hồ sơ được nhận diện theo khách hàng + mã HĐ (lấy dãy số ≥6 chữ số làm lõi); chuỗi phiên chấp nhận vắng tối đa ${T.GAP} phiên liên tiếp.`;
+  }
+
+  function changes(){
+    const c=T.changes(DAYS),n=DAYS.length;
+    if(n>=2)$('chgtitle').textContent=`Chuyển biến: ${fdy(DAYS[n-2].date)} → ${fdy(DAYS[n-1].date)}`;
+    const li=x=>{const [cu]=keyParts(x.key),it=x.item;
+      return `<li>${x.from?chip(x.from)+' → ':''}${x.to?chip(x.to):'<span class="muted mono" style="font-size:9px">RỜI BÁO CÁO</span>'}
+        <div style="margin-top:4px"><b>${esc(cu)}</b> <span class="code">${esc(T.ctrCode(it.ctr))}</span>${x.seenBefore?' <span class="muted" style="font-size:10px">(quay lại)</span>':''}</div>
+        <div class="muted">${esc(plain(it.title))}</div></li>`;};
+    const col=(t,clr,l)=>`<div><h3 class="caps" style="color:${clr}">${t} · ${l.length}</h3>${l.length?'<ul>'+l.map(li).join('')+'</ul>':'<div class="empty">Không có.</div>'}</div>`;
+    $('chg').innerHTML=col('Xấu đi',CLR.R,c.worse)+col('Cải thiện',CLR.G,c.better)+col('Mới vào báo cáo','var(--primary)',c.added)+col('Rời báo cáo','var(--muted)',c.dropped);
+  }
+
+  function customers(){
+    const rows=T.customers(DAYS,10),max=Math.max(1,...rows.map(r=>r.recent));
+    $('cust').innerHTML=rows.map(r=>{
+      const d=r.recent-r.before;
+      const trend=d>0?`<span class="up">▲ +${d}</span>`:d<0?`<span class="down">▼ ${d}</span>`:'<span class="muted">=</span>';
+      const now=['R','A','G'].filter(k=>r.now[k]).map(k=>`<span class="chip" style="color:${CLR[k]};border-color:${CLR[k]}66;background:${CLR[k]}1a">${r.now[k]} ${LBL[k]}</span>`).join(' ')||'<span class="muted">không có trong báo cáo</span>';
+      return `<tr><td class="cust">${esc(r.cust)}</td>
+        <td><div class="cbar"><div class="track"><div class="fill" style="width:${r.recent/max*100}%"></div></div><span class="mono">${r.recent}</span></div></td>
+        <td class="num">${r.before}</td><td class="num mono">${trend}</td><td>${now}</td></tr>`;}).join('');
+  }
+
+  function seg(id,attr,set){$(id).querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+    $(id).querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));set(b.dataset[attr]);}));}
+  seg('range','n',v=>{RANGE=+v;chart();});
+  seg('ragf','f',v=>{FILTER=v;aging();});
+  let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>SERIES.length&&chart(),150);});
+})();
+</script>
+</body>
+</html>
