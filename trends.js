@@ -154,7 +154,7 @@
     return [CSV_COLS.join(',')].concat(rows.map(r => CSV_COLS.map(c => csvCell(r[c])).join(','))).join('\r\n') + '\r\n';
   }
 
-  const api = { strip, CSV_COLS, plainText, csvRows, toCSV, GAP, ctrCode, normCust, itemKey, byDay, ragSeries, aging, changes, customers };
+  const api = { VERSION: '2026-10-06b', strip, CSV_COLS, plainText, csvRows, toCSV, GAP, ctrCode, normCust, itemKey, byDay, ragSeries, aging, changes, customers };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Trends = api;
 })(this);

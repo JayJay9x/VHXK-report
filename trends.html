@@ -422,9 +422,16 @@
   </section>
 </main>
 
-<script src="trends.js"></script>
+<!-- ?v= phải đổi cùng Trends.VERSION mỗi khi sửa trends.js, để trình duyệt không dùng bản cũ trong cache (GitHub Pages cache 10 phút) -->
+<script src="trends.js?v=2026-10-06b"></script>
 <script>
-(function(){
+(function boot(){
+  const NEED='2026-10-06b';
+  if(!window.Trends||window.Trends.VERSION!==NEED){
+    // trends.js trong cache cũ hơn trang → tải lại bản mới rồi mới vẽ
+    if(boot.retried){document.getElementById('err').textContent='// TRANG ĐANG DÙNG BẢN trends.js CŨ — HÃY TẢI LẠI TRANG (Ctrl+F5) //';document.getElementById('err').style.display='block';return;}
+    boot.retried=true;const sc=document.createElement('script');sc.src='trends.js?t='+Date.now();sc.onload=sc.onerror=boot;document.head.appendChild(sc);return;
+  }
   const T=window.Trends;
   const CLR={R:'#EF4444',A:'#F59E0B',G:'#43B649'};
   const LBL={R:'ĐỎ',A:'VÀNG',G:'XANH'};
@@ -452,15 +459,23 @@
     days.forEach(d=>{const a=document.createElement('a');a.className='dt';a.href=d+'.html';a.textContent=fd(d);nav.appendChild(a);});
   }).catch(e=>console.warn('reports.json?',e));
 
-  fetch('history.json',{cache:'no-store'}).then(r=>r.json()).then(H=>{
+  fetch('history.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(H=>{
     HIST=H;SERIES=T.ragSeries(H);DAYS=T.byDay(H);AGING=T.aging(DAYS);
     if(!SERIES.length)throw new Error('empty');
     LAST=SERIES[SERIES.length-1].date;
     $('c-n').textContent=SERIES.length+' PHIÊN';
     $('c-span').textContent=fdy(SERIES[0].date)+' → '+fdy(LAST);
     document.querySelectorAll('.js-latest').forEach(a=>a.href=LAST+'.html');
-    kpis();ticker();chart(true);aging();changes();customers();reveal();
-  }).catch(e=>{console.warn('history.json?',e);$('err').style.display='block';});
+    // vẽ từng khối riêng: 1 khối lỗi không làm trống cả trang
+    const fails=[];
+    [['KPI',kpis],['LIVE FEED',ticker],['BIỂU ĐỒ',()=>chart(true)],['TỒN ĐỌNG',aging],['CHUYỂN BIẾN',changes],['KHÁCH HÀNG',customers],['HIỆU ỨNG',reveal]]
+      .forEach(([n,f])=>{try{f();}catch(e){console.error(n,e);fails.push(n+': '+e.message);}});
+    if(fails.length){$('err').textContent='// LỖI HIỂN THỊ — '+fails.join(' · ')+' — thử tải lại trang (Ctrl+F5) //';$('err').style.display='block';}
+  },e=>{console.warn('history.json?',e);
+    $('err').textContent=location.protocol==='file:'
+      ?'// KHÔNG TẢI ĐƯỢC history.json — mở trang qua GitHub Pages hoặc máy chủ web, không mở bằng file:// //'
+      :'// KHÔNG TẢI ĐƯỢC history.json ('+e.message+') — kiểm tra kết nối rồi tải lại trang //';
+    $('err').style.display='block';});
 
   function isEsc(a){return a.rag==='R'&&(a.redStreak>=ESC_RED||a.redTotal>=ESC_TOTAL);}
 
